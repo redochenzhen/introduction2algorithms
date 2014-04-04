@@ -1,7 +1,7 @@
 /*
  * avl_tree.c
  *
- *  Created on: 2014��4��1��
+ *  Created on: 2014年4月1日
  *      Author: Coeus
  */
 
@@ -25,8 +25,8 @@ tree_node_pt avl_new_node(int key){
 
 bs_tree_pt avl_new_tree(){
 	bs_tree_pt tree=(bs_tree_pt)malloc(sizeof(bs_tree_t));
-	tree->nil=NIL;
-	tree->root=NIL;
+	tree->nil=avl_new_node(INT_MIN);
+	tree->root=tree->nil;
 	tree->type=TREE_AVL;
 	return tree;
 }
@@ -89,14 +89,8 @@ tree_node_pt avl_delete(bs_tree_pt tree,const tree_node_pt node){
 		del->bf=node->bf;
 		del=del->right;
 	}
-	if(del==tree->nil){
-		if(node->parent->bf==1||node->parent->bf==-1){
-			node->parent->bf=0;
-			del=node->parent;
-		}
-	}
 	delete_node(tree,node);
-	//��ʱdel������ָ��nil
+	//此时del可能指向nil，但是delete_node方法保证nil->parent暂时有意义
 	delete_fixup(tree,del);
 	node->parent=NIL;
 	node->left=NIL;
@@ -107,40 +101,46 @@ tree_node_pt avl_delete(bs_tree_pt tree,const tree_node_pt node){
 void delete_fixup(bs_tree_pt tree,tree_node_pt node){
 	while(node!=tree->root){
 		tree_node_pt p=node->parent;
-		if(node==p->left){
+		tree_node_pt sibling=NIL;
+		//特殊情况，会使得p的左右子节点相同
+		if(p->left==tree->nil&&p->right==tree->nil){
+			p->bf=0;
+		}
+		else if(node==p->left){
 			p->bf++;
-			node=p->right;
+			sibling=p->right;
 		}else{
 			p->bf--;
-			node=p->left;
+			sibling=p->left;
 		}
 		if(p->bf==0){
 			node=p;
 			continue;
 		}else if(p->bf==1||p->bf==-1) return;
 		else{
-			int bf=node->bf+p->bf;
+			int bf=sibling->bf+p->bf;
 			switch(bf){
 			case 3:
 				left_rotate_with_bf(tree,p);
-				node=node->parent;
-				continue;
+				break;
 			case 2:
 				left_rotate_with_bf(tree,p);
 				return;
 			case -3:
 				right_rotate_with_bf(tree,p);
-				continue;
+				break;
 			case -2:
 				right_rotate_with_bf(tree,p);
 				return;
 			case 1:
-				rl_rotate_with_bf(tree,node);
-				continue;
+				rl_rotate_with_bf(tree,sibling);
+				break;
 			case -1:
-				lr_rotate_with_bf(tree,node);
-				continue;
+				lr_rotate_with_bf(tree,sibling);
+				break;
 			}
+			//进入下一次循环之前，应将node指向参与旋转的最高节点
+			node=node->parent->parent;
 		}
 	}
 }
@@ -149,7 +149,7 @@ void left_rotate_with_bf(bs_tree_pt tree,tree_node_pt p){
 	if(p->right->bf==0){
 		p->bf=1;
 		p->right->bf=-1;
-	}else{
+	}else{	//else==1
 		p->bf=0;
 		p->right->bf=0;
 	}
@@ -160,7 +160,7 @@ void right_rotate_with_bf(bs_tree_pt tree,tree_node_pt p){
 	if(p->left->bf==0){
 		p->bf=-1;
 		p->left->bf=1;
-	}else{
+	}else{	//else==-1
 		p->bf=0;
 		p->left->bf=0;
 	}
