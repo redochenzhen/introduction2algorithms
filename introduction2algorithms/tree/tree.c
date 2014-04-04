@@ -1,7 +1,7 @@
 /*
  * tree.c
  *
- *  Created on: 2014Äê4ÔÂ1ÈÕ
+ *  Created on: 2014å¹´4æœˆ1æ—¥
  *      Author: Coeus
  */
 
@@ -80,14 +80,15 @@ void insert_node(bs_tree_pt tree,tree_node_pt node){
 		}
 	}
 	node->parent=y;
-	if(y==tree->nil){				//²åÈëÖ®Ç°treeÊÇ¿ÕÊ÷
+	//æ’å…¥ä¹‹å‰treeæ˜¯ç©ºæ ‘
+	if(y==tree->nil){
 		tree->root=node;
 	}else if(node->key<y->key){
 		y->left=node;
 	}else{
 		y->right=node;
 	}
-	//²åÈëÊÇÍâÀ´½Úµã¸úÊ÷·¢Éú¹ØÏµµÄÎ¨Ò»Èë¿Ú£¬ÕâÀï±£Ö¤ÁËĞÂ½ÚµãµÄleftºÍrightÖ¸Ïònil
+	//æ’å…¥æ˜¯å¤–æ¥èŠ‚ç‚¹è·Ÿæ ‘å‘ç”Ÿå…³ç³»çš„å”¯ä¸€å…¥å£ï¼Œè¿™é‡Œä¿è¯äº†æ–°èŠ‚ç‚¹çš„leftå’ŒrightæŒ‡å‘nil
 	node->left=tree->nil;
 	node->right=tree->nil;
 }
@@ -101,7 +102,7 @@ void transplant_node(bs_tree_pt tree,tree_node_pt from,tree_node_pt to){
 		to->parent->right=from;
 	}
 	if(from!=NIL){
-		//ÔÚºìºÚÊ÷ÖĞ£¬¼´Ê¹fromÊÇnil£¬nil->parentÒ²ÔİÊ±Ö¸Ïòto->parent
+		//åœ¨çº¢é»‘æ ‘ä¸­ï¼Œå³ä½¿fromæ˜¯nilï¼Œnil->parentä¹Ÿæš‚æ—¶æŒ‡å‘to->parent
 		from->parent=to->parent;
 	}
 }
@@ -113,7 +114,7 @@ tree_node_pt delete_node(bs_tree_pt tree,const tree_node_pt node){
 		transplant_node(tree,node->left,node);
 	}else{
 		tree_node_pt min=minimum_sub(tree,node->right);
-		//¶ÔÓÒ×ÓÊ÷×îĞ¡½Úµã²»ÊÇÓÒ½ÚµãµÄÇé¿ö½øĞĞ×ª»¯
+		//å¯¹å³å­æ ‘æœ€å°èŠ‚ç‚¹ä¸æ˜¯å³èŠ‚ç‚¹çš„æƒ…å†µè¿›è¡Œè½¬åŒ–
 		if(node!=min->parent){
 			transplant_node(tree,min->right,min);
 			min->right=node->right;
@@ -172,7 +173,7 @@ void left_rotate(bs_tree_pt tree,tree_node_pt node){
 		r->left->parent=node;
 	}
 	r->parent=node->parent;
-	//Ğı×ª¸ú½ÚµãºóĞèÒªĞŞ¸´tree->root
+	//æ—‹è½¬è·ŸèŠ‚ç‚¹åéœ€è¦ä¿®å¤tree->root
 	if(node==tree->root){
 		tree->root=r;
 	}else if(node==node->parent->left){

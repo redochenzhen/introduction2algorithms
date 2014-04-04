@@ -1,7 +1,7 @@
 /*
  * rb_tree.c
  *
- *  Created on: 2014Äê4ÔÂ1ÈÕ
+ *  Created on: 2014å¹´4æœˆ1æ—¥
  *      Author: Coeus
  */
 
@@ -10,8 +10,8 @@
 #include <stdlib.h>
 
 /*
- * ´øÉ«Ğı×ª£¬Èç¹ûÏÂÉ«ÊÇºìÉ«£¬²»»áÒıÆğÈÎºÎºÚ¸ß¸Ä±ä£»
- * Èç¹ûÏÂÉ«ÊÇºÚÉ«£¬»áÒıÆğĞı×ªÖáµÄ×Ó½ÚµãºÚ¸ß¼õ1£¬ĞÖµÜ½ÚµãµÄºÚ¸ß¼Ó1
+ * å¸¦è‰²æ—‹è½¬ï¼Œå¦‚æœä¸‹è‰²æ˜¯çº¢è‰²ï¼Œä¸ä¼šå¼•èµ·ä»»ä½•é»‘é«˜æ”¹å˜ï¼›
+ * å¦‚æœä¸‹è‰²æ˜¯é»‘è‰²ï¼Œä¼šå¼•èµ·æ—‹è½¬è½´çš„å­èŠ‚ç‚¹é»‘é«˜å‡1ï¼Œå…„å¼ŸèŠ‚ç‚¹çš„é»‘é«˜åŠ 1
  */
 static void left_rotate_with_color(bs_tree_pt tree,tree_node_pt node);
 static void right_rotate_with_color(bs_tree_pt tree,tree_node_pt node);
@@ -58,24 +58,31 @@ void insert_fixup(bs_tree_pt tree,tree_node_pt node){
 				uncle->color=RB_BLACK;
 				uncle->parent->color=RB_RED;
 				node=uncle->parent;
+				continue;
 			}else if(node==node->parent->right){
 				left_rotate(tree,node->parent);
 				node=node->left;
+				continue;
 			}else{
-				right_rotate_with_color(tree,node->parent->parent);	//break;
+				right_rotate_with_color(tree,node->parent->parent);
+				break;
 			}
 		}else{
+			//ä»¥ä¸‹ä»£ç æ˜¯ä¸Šé¢æƒ…å½¢çš„é•œåƒ
 			tree_node_pt uncle=node->parent->parent->left;
 			if(uncle->color==RB_RED){
 				node->parent->color=RB_BLACK;
 				uncle->color=RB_BLACK;
 				uncle->parent->color=RB_RED;
 				node=uncle->parent;
+				continue;
 			}else if(node==node->parent->left){
 				right_rotate(tree,node->parent);
 				node=node->right;
+				continue;
 			}else{
-				left_rotate_with_color(tree,node->parent->parent);	//break;
+				left_rotate_with_color(tree,node->parent->parent);
+				break;
 			}
 		}
 	}
@@ -97,7 +104,7 @@ tree_node_pt rb_delete(bs_tree_pt tree,const tree_node_pt node){
 	}
 	delete_node(tree,node);
 	if(d_color==RB_BLACK){
-		//´ËÊ±del¿ÉÄÜÖ¸Ïònil£¬µ«ÊÇdelete_node·½·¨±£Ö¤nil->parentÔİÊ±ÓĞÒâÒå
+		//æ­¤æ—¶delå¯èƒ½æŒ‡å‘nilï¼Œä½†æ˜¯delete_nodeæ–¹æ³•ä¿è¯nil->parentæš‚æ—¶æœ‰æ„ä¹‰
 		delete_fixup(tree,del);
 	}
 	node->parent=NIL;
@@ -114,9 +121,9 @@ void delete_fixup(bs_tree_pt tree,tree_node_pt node){
 				left_rotate_with_color(tree,node->parent);
 				sibling=node->parent->right;
 			}
-			//´ËÊ±ÒÑ¾­È·±£siblingÎªºÚÉ«
+			//æ­¤æ—¶å·²ç»ç¡®ä¿siblingä¸ºé»‘è‰²
 			if(sibling->left->color==RB_BLACK&&sibling->right->color==RB_BLACK){
-				//Ê¹µÃnode->parentµÄºÚ¸ß¼õ1£¬´Ó¶øÍÆÏò¶ÔparentµÄĞŞ¸´
+				//ä½¿å¾—node->parentçš„é»‘é«˜å‡1ï¼Œä»è€Œæ¨å‘å¯¹parentçš„ä¿®å¤
 				sibling->color=RB_RED;
 				node=node->parent;
 				continue;
@@ -125,7 +132,7 @@ void delete_fixup(bs_tree_pt tree,tree_node_pt node){
 					right_rotate_with_color(tree,sibling);
 					sibling=node->parent->right;
 				}
-				//´ËÊ±ÒÑ¾­È·±£sibling->rightÎªºìÉ«
+				//æ­¤æ—¶å·²ç»ç¡®ä¿sibling->rightä¸ºçº¢è‰²
 				sibling->color=RB_BLACK;
 				left_rotate_with_color(tree,node->parent);
 				return;
@@ -136,9 +143,9 @@ void delete_fixup(bs_tree_pt tree,tree_node_pt node){
 				right_rotate_with_color(tree,node->parent);
 				sibling=node->parent->left;
 			}
-			//´ËÊ±ÒÑ¾­È·±£siblingÎªºÚÉ«
+			//æ­¤æ—¶å·²ç»ç¡®ä¿siblingä¸ºé»‘è‰²
 			if(sibling->right->color==RB_BLACK&&sibling->left->color==RB_BLACK){
-				//Ê¹µÃnode->parentµÄºÚ¸ß¼õ1£¬´Ó¶øÍÆÏò¶ÔparentµÄĞŞ¸´
+				//ä½¿å¾—node->parentçš„é»‘é«˜å‡1ï¼Œä»è€Œæ¨å‘å¯¹parentçš„ä¿®å¤
 				sibling->color=RB_RED;
 				node=node->parent;
 				continue;
@@ -147,7 +154,7 @@ void delete_fixup(bs_tree_pt tree,tree_node_pt node){
 					left_rotate_with_color(tree,sibling);
 					sibling=node->parent->left;
 				}
-				//´ËÊ±ÒÑ¾­È·±£sibling->leftÎªºìÉ«
+				//æ­¤æ—¶å·²ç»ç¡®ä¿sibling->leftä¸ºçº¢è‰²
 				sibling->color=RB_BLACK;
 				right_rotate_with_color(tree,node->parent);
 				return;

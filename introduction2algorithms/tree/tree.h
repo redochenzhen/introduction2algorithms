@@ -1,7 +1,7 @@
 /*
- * tree.h
+ * avl_tree.c
  *
- *  Created on: 2014Äê3ÔÂ31ÈÕ
+ *  Created on: 2014å¹´4æœˆ1æ—¥
  *      Author: Coeus
  */
 
@@ -10,9 +10,9 @@
 
 #include "contract.h"
 
-//ºìºÚÊ÷µÄÑÕÉ«
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«
 typedef enum{RB_RED,RB_BLACK}rb_color_t;
-//¶þ²æËÑË÷Ê÷µÄÀàÐÍ
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 typedef enum{TREE_BS,TREE_RB,TREE_AVL,TREE_OS}tree_type_t;
 
 typedef struct _tree_node *tree_node_pt;
@@ -49,7 +49,7 @@ tree_node_pt successor(bs_tree_cpt tree,tree_node_pt node);
 tree_node_pt predecessor(bs_tree_cpt tree,tree_node_pt node);
 void free_sub(bs_tree_pt tree,tree_node_pt sub_root);
 void free_tree(bs_tree_pt tree);
-//nodeµÄÀàÐÍ£ºtree_node_t *const
+//nodeï¿½ï¿½ï¿½ï¿½ï¿½Í£ï¿½tree_node_t *const
 tree_node_pt delete_node(bs_tree_pt tree,const tree_node_pt node);
 void insert_node(bs_tree_pt tree,tree_node_pt node);
 void transplant_node(bs_tree_pt tree,tree_node_pt from,tree_node_pt to);
