@@ -18,28 +18,28 @@ static void right_rotate_with_color(bs_tree_pt tree,tree_node_pt node);
 static void insert_fixup(bs_tree_pt tree,tree_node_pt node);
 static void delete_fixup(bs_tree_pt tree,tree_node_pt node);
 
-tree_node_pt rb_new_node(int key){
+tree_node_pt rb_new_node(elem_t satellite){
 	tree_node_pt node=(tree_node_pt)malloc(sizeof(tree_node_t));
-	node->key=key;
+	node->satellite=satellite;
 	node->color=RB_RED;
 	return node;
 }
 
-bs_tree_pt rb_new_tree(){
-	bs_tree_pt tree=(bs_tree_pt)malloc(sizeof(bs_tree_t));
-	tree->nil=rb_new_node(INT_MIN);
+bs_tree_pt rb_new_tree(compare_func_t compare,identify_func_t identify){
+	bs_tree_pt tree=new_tree(compare,identify);
+	tree->nil=rb_new_node(NIL);
 	tree->nil->color=RB_BLACK;
 	tree->root=tree->nil;
 	tree->type=TREE_RB;
 	return tree;
 }
 
-void rb_reset_tree(bs_tree_pt tree,int keys[],int length){
+void rb_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,int length){
 	free_sub(tree,tree->root);
 	if(length<=0) return;
 	int i=0;
 	for(;i<length;++i){
-		rb_insert(tree,rb_new_node(keys[i]));
+		rb_insert(tree,rb_new_node(satellite_arr[i]));
 	}
 }
 

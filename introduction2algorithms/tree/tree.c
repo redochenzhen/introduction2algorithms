@@ -8,27 +8,51 @@
 #include "contract.h"
 #include "tree.h"
 #include <stdlib.h>
+#include <string.h>
 
-tree_node_pt new_node(int key){
+static int integer_cmp(elem_t x,elem_t y){
+	long int n=(long int)x-(long int)y;
+	if(n>0) return 1;
+	if(n<0) return -1;
+	return 0;
+}
+
+static int float_cmp(elem_t x,elem_t y){
+	double n=*(double*)x-*(double*)y;
+	if(n>0) return 1;
+	if(n<0) return -1;
+	return 0;
+}
+
+static int str_cmp(elem_t x,elem_t y){
+	const char* _x=(const char*)x;
+	const char* _y=(const char*)y;
+	return strcmp(_x,_y);
+}
+
+
+tree_node_pt new_node(void* satellite){
 	tree_node_pt node=(tree_node_pt)malloc(sizeof(tree_node_t));
-	node->key=key;
+	node->satellite=satellite;
 	return node;
 }
 
-bs_tree_pt new_tree(){
+bs_tree_pt new_tree(compare_func_t compare,identify_func_t identify){
 	bs_tree_pt tree=(bs_tree_pt)malloc(sizeof(bs_tree_t));
 	tree->nil=NIL;
 	tree->root=NIL;
 	tree->type=TREE_BS;
+	tree->compare=compare!=NIL?compare:integer_cmp;
+	tree->identify=identify!=NULL?identify:tree->compare;
 	return tree;
 }
 
-void reset_tree(bs_tree_pt tree,int keys[],int length){
+void reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,int length){
 	free_sub(tree,tree->root);
 	if(length<=0) return;
 	int i=0;
 	for(;i<length;++i){
-		insert_node(tree,new_node(keys[i]));
+		insert_node(tree,new_node(satellite_arr[i]));
 	}
 }
 
@@ -71,9 +95,10 @@ tree_node_pt predecessor(bs_tree_cpt tree,tree_node_pt node){
 void insert_node(bs_tree_pt tree,tree_node_pt node){
 	tree_node_pt x=tree->root;
 	tree_node_pt y=tree->nil;
+	compare_func_t cmp=tree->compare;
 	while(x!=tree->nil){
 		y=x;
-		if(node->key<x->key){
+		if(cmp(node->satellite,x->satellite)<0){
 			x=x->left;
 		}else{
 			x=x->right;
@@ -83,7 +108,7 @@ void insert_node(bs_tree_pt tree,tree_node_pt node){
 	//插入之前tree是空树
 	if(y==tree->nil){
 		tree->root=node;
-	}else if(node->key<y->key){
+	}else if(cmp(node->satellite,y->satellite)<0){
 		y->left=node;
 	}else{
 		y->right=node;
@@ -234,13 +259,16 @@ void postorder_walk_sub(bs_tree_pt tree,tree_node_pt sub_root,node_predicate_t f
 	func(sub_root);
 }
 
-tree_node_pt search_key(bs_tree_cpt tree,int key){
-	return search_key_sub(tree,tree->root,key);
+tree_node_pt search_tree(bs_tree_cpt tree,elem_t satellite){
+	return search_subtree(tree,tree->root,satellite);
 }
 
-tree_node_pt search_key_sub(bs_tree_cpt tree,tree_node_pt sub_root,int key){
-	while(sub_root!=tree->nil&&sub_root->key!=key){
-		if(key<sub_root->key){
+tree_node_pt search_subtree(bs_tree_cpt tree,tree_node_pt sub_root,elem_t satellite){
+	compare_func_t cmp=tree->compare;
+	identify_func_t identify=tree->identify;
+	//bool flag=cmp==identify;
+	while(sub_root!=tree->nil&&!(identify(sub_root->satellite,satellite))){
+		if(cmp(satellite,sub_root->satellite)<0){
 			sub_root=sub_root->left;
 		}else{
 			sub_root=sub_root->right;
@@ -248,3 +276,4 @@ tree_node_pt search_key_sub(bs_tree_cpt tree,tree_node_pt sub_root,int key){
 	}
 	return sub_root;
 }
+

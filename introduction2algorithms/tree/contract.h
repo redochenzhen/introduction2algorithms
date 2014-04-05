@@ -11,6 +11,8 @@
 #define NIL ((void*)0)
 #define INT_MAX 0x7FFFFFFF
 #define INT_MIN 0x80000000
+#define VOID_INT_MAX ((void*)INT_MAX)
+#define VOID_INT_MIN ((void*)INT_MIN)
 
 typedef enum{false=0,true=1}bool;
 
