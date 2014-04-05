@@ -25,8 +25,8 @@ tree_node_pt rb_new_node(elem_t satellite){
 	return node;
 }
 
-bs_tree_pt rb_new_tree(compare_func_t compare,identify_func_t identify){
-	bs_tree_pt tree=new_tree(compare,identify);
+bs_tree_pt rb_new_tree(compare_func_t compare){
+	bs_tree_pt tree=new_tree(compare);
 	tree->nil=rb_new_node(NIL);
 	tree->nil->color=RB_BLACK;
 	tree->root=tree->nil;

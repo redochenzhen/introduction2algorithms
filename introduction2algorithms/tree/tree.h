@@ -32,21 +32,19 @@ typedef struct _tree_node{
 
 typedef void (*node_predicate_t)(tree_node_pt);
 typedef int (*compare_func_t)(elem_t,elem_t);
-typedef bool (*identify_func_t)(elem_t,elem_t);
 
 typedef struct _bs_tree{
 	tree_node_pt root;
 	tree_node_pt nil;
 	tree_type_t type;
 	compare_func_t compare;
-	identify_func_t identify;
 }bs_tree_t,*bs_tree_pt;
 
 typedef const bs_tree_t* bs_tree_cpt;
 
 //bs tree fuction
 tree_node_pt new_node(elem_t satellite);
-bs_tree_pt new_tree(compare_func_t compare,identify_func_t identify);
+bs_tree_pt new_tree(compare_func_t compare);
 void reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,int length);
 bool is_tree_empty(bs_tree_cpt tree);
 tree_node_pt minimum_sub(bs_tree_cpt tree,tree_node_pt sub_root);
@@ -72,14 +70,14 @@ tree_node_pt search_subtree(bs_tree_cpt tree,tree_node_pt sub_root,elem_t satell
 
 //rb tree fuction
 tree_node_pt rb_new_node(elem_t satellite);
-bs_tree_pt rb_new_tree(compare_func_t compare,identify_func_t identify);
+bs_tree_pt rb_new_tree(compare_func_t compare);
 void rb_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,int length);
 void rb_insert(bs_tree_pt tree,tree_node_pt node);
 tree_node_pt rb_delete(bs_tree_pt tree,const tree_node_pt node);
 
 //avl tree fuction
 tree_node_pt avl_new_node(elem_t satellite);
-bs_tree_pt avl_new_tree(compare_func_t compare,identify_func_t identify);
+bs_tree_pt avl_new_tree(compare_func_t compare);
 void avl_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,int length);
 void avl_insert(bs_tree_pt tree,tree_node_pt node);
 tree_node_pt avl_delete(bs_tree_pt tree,const tree_node_pt node);

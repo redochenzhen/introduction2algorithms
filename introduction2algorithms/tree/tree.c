@@ -8,7 +8,6 @@
 #include "contract.h"
 #include "tree.h"
 #include <stdlib.h>
-#include <string.h>
 
 static int integer_cmp(elem_t x,elem_t y){
 	long int n=(long int)x-(long int)y;
@@ -17,33 +16,18 @@ static int integer_cmp(elem_t x,elem_t y){
 	return 0;
 }
 
-static int float_cmp(elem_t x,elem_t y){
-	double n=*(double*)x-*(double*)y;
-	if(n>0) return 1;
-	if(n<0) return -1;
-	return 0;
-}
-
-static int str_cmp(elem_t x,elem_t y){
-	const char* _x=(const char*)x;
-	const char* _y=(const char*)y;
-	return strcmp(_x,_y);
-}
-
-
 tree_node_pt new_node(void* satellite){
 	tree_node_pt node=(tree_node_pt)malloc(sizeof(tree_node_t));
 	node->satellite=satellite;
 	return node;
 }
 
-bs_tree_pt new_tree(compare_func_t compare,identify_func_t identify){
+bs_tree_pt new_tree(compare_func_t compare){
 	bs_tree_pt tree=(bs_tree_pt)malloc(sizeof(bs_tree_t));
 	tree->nil=NIL;
 	tree->root=NIL;
 	tree->type=TREE_BS;
 	tree->compare=compare!=NIL?compare:integer_cmp;
-	tree->identify=identify!=NULL?identify:tree->compare;
 	return tree;
 }
 
@@ -265,14 +249,15 @@ tree_node_pt search_tree(bs_tree_cpt tree,elem_t satellite){
 
 tree_node_pt search_subtree(bs_tree_cpt tree,tree_node_pt sub_root,elem_t satellite){
 	compare_func_t cmp=tree->compare;
-	identify_func_t identify=tree->identify;
-	//bool flag=cmp==identify;
-	while(sub_root!=tree->nil&&!(identify(sub_root->satellite,satellite))){
+	while(sub_root!=tree->nil&&cmp(sub_root->satellite,satellite)!=0){
 		if(cmp(satellite,sub_root->satellite)<0){
 			sub_root=sub_root->left;
 		}else{
 			sub_root=sub_root->right;
 		}
+	}
+	if(sub_root==tree->nil){
+		return NIL;
 	}
 	return sub_root;
 }
