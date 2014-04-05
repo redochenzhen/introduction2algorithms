@@ -10,9 +10,9 @@
 
 #include "contract.h"
 
-//���������ɫ
+//红黑树的颜色
 typedef enum{RB_RED,RB_BLACK}rb_color_t;
-//����������������
+//二叉搜索树的类型
 typedef enum{TREE_BS,TREE_RB,TREE_AVL,TREE_OS}tree_type_t;
 
 typedef struct _tree_node *tree_node_pt;
@@ -49,7 +49,7 @@ tree_node_pt successor(bs_tree_cpt tree,tree_node_pt node);
 tree_node_pt predecessor(bs_tree_cpt tree,tree_node_pt node);
 void free_sub(bs_tree_pt tree,tree_node_pt sub_root);
 void free_tree(bs_tree_pt tree);
-//node�����ͣ�tree_node_t *const
+//node形参的展开类型：tree_node_t *const
 tree_node_pt delete_node(bs_tree_pt tree,const tree_node_pt node);
 void insert_node(bs_tree_pt tree,tree_node_pt node);
 void transplant_node(bs_tree_pt tree,tree_node_pt from,tree_node_pt to);
