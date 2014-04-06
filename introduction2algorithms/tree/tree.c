@@ -5,16 +5,10 @@
  *      Author: Coeus
  */
 
-#include "contract.h"
 #include "tree.h"
 #include <stdlib.h>
 
-static int integer_cmp(elem_t x,elem_t y){
-	long int n=(long int)x-(long int)y;
-	if(n>0) return 1;
-	if(n<0) return -1;
-	return 0;
-}
+static int integer_cmp(elem_t x,elem_t y);
 
 tree_node_pt new_node(void* satellite){
 	tree_node_pt node=(tree_node_pt)malloc(sizeof(tree_node_t));
@@ -256,9 +250,11 @@ tree_node_pt search_tree(bs_tree_cpt tree,elem_t satellite){
 }
 
 tree_node_pt search_subtree(bs_tree_cpt tree,tree_node_pt sub_root,elem_t satellite){
-	compare_func_t cmp=tree->compare;
-	while(sub_root!=tree->nil&&cmp(sub_root->satellite,satellite)!=0){
-		if(cmp(satellite,sub_root->satellite)<0){
+	int flag;
+	while(sub_root!=tree->nil){
+		flag=tree->compare(satellite,sub_root->satellite);
+		if(flag==0) break;
+		if(flag<0){
 			sub_root=sub_root->left;
 		}else{
 			sub_root=sub_root->right;
@@ -268,5 +264,12 @@ tree_node_pt search_subtree(bs_tree_cpt tree,tree_node_pt sub_root,elem_t satell
 		return NIL;
 	}
 	return sub_root;
+}
+
+int integer_cmp(elem_t x,elem_t y){
+	long int n=(long int)x-(long int)y;
+	if(n>0) return 1;
+	if(n<0) return -1;
+	return 0;
 }
 

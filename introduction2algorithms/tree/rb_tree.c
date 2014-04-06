@@ -5,7 +5,6 @@
  *      Author: Coeus
  */
 
-#include "contract.h"
 #include "tree.h"
 #include <stdlib.h>
 
@@ -34,8 +33,8 @@ bs_tree_pt rb_new_tree(compare_func_t compare){
 	return tree;
 }
 
-void rb_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,int length){
-	int i;
+void rb_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,longsize_t length){
+	longsize_t i;
 	free_sub(tree,tree->root);
 	if(length<=0) return;
 	for(i=0;i<length;++i){
@@ -90,19 +89,35 @@ void insert_fixup(bs_tree_pt tree,tree_node_pt node){
 }
 
 tree_node_pt rb_delete(bs_tree_pt tree,const tree_node_pt node){
+	/*
+	 * 跟插入不同，不能简单调用delete_node
+	 */
 	tree_node_pt del=node;
-	rb_color_t d_color=del->color;
-	if(del->left==tree->nil){
-		del=del->right;
-	}else if(del->right==tree->nil){
-		del=del->left;
+	rb_color_t d_color=node->color;
+	if(node->left==tree->nil){
+		del=node->right;
+		transplant_node(tree,node->right,node);
+	}else if(node->right==tree->nil){
+		del=node->left;
+		transplant_node(tree,node->left,node);
 	}else{
 		del=minimum_sub(tree,del->right);
 		d_color=del->color;
 		del->color=node->color;
+		//对右子树最小节点不是右节点的情况进行转化
+		if(node!=del->parent){
+			transplant_node(tree,del->right,del);
+			del->right=node->right;
+			del->right->parent=del;
+		}else{
+			//防止del->right为nil时无法向上追溯,其它情况由transplant_node保证
+			del->right->parent=del;
+		}
+		transplant_node(tree,del,node);
+		del->left=node->left;
+		del->left->parent=del;
 		del=del->right;
 	}
-	delete_node(tree,node);
 	if(d_color==RB_BLACK){
 		//此时del可能指向nil，但是delete_node方法保证nil->parent暂时有意义
 		delete_fixup(tree,del);
@@ -138,6 +153,7 @@ void delete_fixup(bs_tree_pt tree,tree_node_pt node){
 				return;
 			}
 		}else{
+			//以下代码是上面情形的镜像
 			tree_node_pt sibling=node->parent->left;
 			if(sibling->color==RB_RED){
 				right_rotate_with_color(tree,node->parent);

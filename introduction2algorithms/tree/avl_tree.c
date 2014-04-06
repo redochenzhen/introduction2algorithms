@@ -5,7 +5,6 @@
  *      Author: Coeus
  */
 
-#include "contract.h"
 #include "tree.h"
 #include <stdlib.h>
 
@@ -31,8 +30,8 @@ bs_tree_pt avl_new_tree(compare_func_t compare){
 	return tree;
 }
 
-void avl_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,int length){
-	int i;
+void avl_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,longsize_t length){
+	longsize_t i;
 	free_sub(tree,tree->root);
 	if(length<=0) return;
 	for(i=0;i<length;++i){
@@ -92,9 +91,6 @@ tree_node_pt avl_delete(bs_tree_pt tree,const tree_node_pt node){
 	delete_node(tree,node);
 	//此时del可能指向nil，但是delete_node方法保证nil->parent暂时有意义
 	delete_fixup(tree,del);
-	node->parent=NIL;
-	node->left=NIL;
-	node->right=NIL;
 	return node;
 }
 
