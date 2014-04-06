@@ -46,7 +46,11 @@ typedef const bs_tree_t* bs_tree_cpt;
 tree_node_pt new_node(elem_t satellite);
 bs_tree_pt new_tree(compare_func_t compare);
 void reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,int length);
+#ifdef _WIN32
+BOOL is_tree_empty(bs_tree_cpt tree);
+#else
 bool is_tree_empty(bs_tree_cpt tree);
+#endif
 tree_node_pt minimum_sub(bs_tree_cpt tree,tree_node_pt sub_root);
 tree_node_pt maximum_sub(bs_tree_cpt tree,tree_node_pt sub_root);
 tree_node_pt successor(bs_tree_cpt tree,tree_node_pt node);

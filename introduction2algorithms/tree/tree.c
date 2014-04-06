@@ -32,10 +32,10 @@ bs_tree_pt new_tree(compare_func_t compare){
 }
 
 void reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,int length){
+	int i;
 	free_sub(tree,tree->root);
 	if(length<=0) return;
-	int i=0;
-	for(;i<length;++i){
+	for(i=0;i<length;++i){
 		insert_node(tree,new_node(satellite_arr[i]));
 	}
 }
@@ -139,9 +139,15 @@ tree_node_pt delete_node(bs_tree_pt tree,const tree_node_pt node){
 	return node;
 }
 
+#ifdef _WIN32
+BOOL is_tree_empty(bs_tree_cpt tree){
+	return tree->root==tree->nil;
+}
+#else
 bool is_tree_empty(bs_tree_cpt tree){
 	return tree->root==tree->nil;
 }
+#endif
 
 static void recursive_free_sub(bs_tree_pt tree,tree_node_pt sub_root){
 	if(sub_root->left!=tree->nil){
@@ -175,8 +181,9 @@ void free_tree(bs_tree_pt tree){
 }
 
 void left_rotate(bs_tree_pt tree,tree_node_pt node){
+	tree_node_pt r;
 	if(node->right==tree->nil) return;
-	tree_node_pt r=node->right;
+	r=node->right;
 	node->right=r->left;
 	if(r->left!=tree->nil){
 		r->left->parent=node;
@@ -195,8 +202,9 @@ void left_rotate(bs_tree_pt tree,tree_node_pt node){
 }
 
 void right_rotate(bs_tree_pt tree,tree_node_pt node){
+	tree_node_pt l;
 	if(node->left==tree->nil) return;
-	tree_node_pt l=node->left;
+	l=node->left;
 	node->left=l->right;
 	if(l->right!=tree->nil){
 		l->right->parent=node;

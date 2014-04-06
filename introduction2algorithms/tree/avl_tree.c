@@ -32,11 +32,10 @@ bs_tree_pt avl_new_tree(compare_func_t compare){
 }
 
 void avl_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,int length){
+	int i;
 	free_sub(tree,tree->root);
 	if(length<=0) return;
-	int i=0;
-	for(;i<length;++i){
-		int x=satellite_arr[i];
+	for(i=0;i<length;++i){
 		avl_insert(tree,avl_new_node(satellite_arr[i]));
 	}
 }
