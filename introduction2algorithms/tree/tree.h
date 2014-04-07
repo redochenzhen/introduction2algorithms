@@ -46,35 +46,37 @@ typedef struct _bs_tree{
 
 typedef const bs_tree_t* bs_tree_cpt;
 
-//bs tree fuction
+#ifdef _WIN32
+BOOL is_tree_empty(bs_tree_cpt tree);
+#else
+bool is_tree_empty(bs_tree_cpt tree);
+#endif
 tree_node_pt new_node(elem_t satellite);
-bs_tree_pt new_tree(compare_func_t compare);
-void reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,int length);
-tree_node_pt minimum_sub(bs_tree_cpt tree,tree_node_pt sub_root);
-tree_node_pt maximum_sub(bs_tree_cpt tree,tree_node_pt sub_root);
-tree_node_pt successor(bs_tree_cpt tree,tree_node_pt node);
-tree_node_pt predecessor(bs_tree_cpt tree,tree_node_pt node);
-void free_sub(bs_tree_pt tree,tree_node_pt sub_root);
-void free_tree(bs_tree_pt tree);
-//node形参的展开类型：tree_node_t *const
-tree_node_pt delete_node(bs_tree_pt tree,const tree_node_pt node);
-void insert_node(bs_tree_pt tree,tree_node_pt node);
-void transplant_node(bs_tree_pt tree,tree_node_pt from,tree_node_pt to);
-void left_rotate(bs_tree_pt tree,tree_node_pt node);
-void right_rotate(bs_tree_pt tree,tree_node_pt node);
 void inorder_walk(bs_tree_pt tree,node_predicate_t func);
 void inorder_walk_sub(bs_tree_pt tree,tree_node_pt sub_root,node_predicate_t func);
 void preorder_walk(bs_tree_pt tree,node_predicate_t func);
 void preorder_walk_sub(bs_tree_pt tree,tree_node_pt sub_root,node_predicate_t func);
 void postorder_walk(bs_tree_pt tree,node_predicate_t func);
 void postorder_walk_sub(bs_tree_pt tree,tree_node_pt sub_root,node_predicate_t func);
-tree_node_pt search_tree(bs_tree_cpt tree,elem_t satellite);
-tree_node_pt search_subtree(bs_tree_cpt tree,tree_node_pt sub_root,elem_t satellite);
-#ifdef _WIN32
-BOOL is_tree_empty(bs_tree_cpt tree);
-#else
-bool is_tree_empty(bs_tree_cpt tree);
-#endif
+void free_subtree(bs_tree_pt tree,tree_node_pt sub_root);
+void free_tree(bs_tree_pt tree);
+void transplant_node(bs_tree_pt tree,tree_node_pt from,tree_node_pt to);
+void left_rotate(bs_tree_pt tree,tree_node_pt node);
+void right_rotate(bs_tree_pt tree,tree_node_pt node);
+
+//bs tree fuction
+bs_tree_pt bs_new_tree(compare_func_t compare);
+void bs_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,int length);
+tree_node_pt minimum_sub(bs_tree_cpt tree,tree_node_pt sub_root);
+tree_node_pt maximum_sub(bs_tree_cpt tree,tree_node_pt sub_root);
+tree_node_pt successor(bs_tree_cpt tree,tree_node_pt node);
+tree_node_pt predecessor(bs_tree_cpt tree,tree_node_pt node);
+//node形参的展开类型：tree_node_t *const
+tree_node_pt delete_node(bs_tree_pt tree,const tree_node_pt node);
+void bs_insert(bs_tree_pt tree,tree_node_pt node);
+tree_node_pt bs_search(bs_tree_cpt tree,elem_t satellite);
+tree_node_pt bs_search_sub(bs_tree_cpt tree,tree_node_pt sub_root,elem_t satellite);
+
 
 //rb tree fuction
 tree_node_pt rb_new_node(elem_t satellite);

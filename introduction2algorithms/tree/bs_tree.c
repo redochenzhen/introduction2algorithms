@@ -10,13 +10,13 @@
 
 static int integer_cmp(elem_t x,elem_t y);
 
-tree_node_pt new_node(void* satellite){
+tree_node_pt new_node(elem_t satellite){
 	tree_node_pt node=(tree_node_pt)malloc(sizeof(tree_node_t));
 	node->satellite=satellite;
 	return node;
 }
 
-bs_tree_pt new_tree(compare_func_t compare){
+bs_tree_pt bs_new_tree(compare_func_t compare){
 	bs_tree_pt tree=(bs_tree_pt)malloc(sizeof(bs_tree_t));
 	tree->nil=NIL;
 	tree->root=NIL;
@@ -25,12 +25,12 @@ bs_tree_pt new_tree(compare_func_t compare){
 	return tree;
 }
 
-void reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,int length){
+void bs_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,int length){
 	int i;
-	free_sub(tree,tree->root);
+	free_subtree(tree,tree->root);
 	if(length<=0) return;
 	for(i=0;i<length;++i){
-		insert_node(tree,new_node(satellite_arr[i]));
+		bs_insert(tree,new_node(satellite_arr[i]));
 	}
 }
 
@@ -70,7 +70,7 @@ tree_node_pt predecessor(bs_tree_cpt tree,tree_node_pt node){
 	return node->parent;
 }
 
-void insert_node(bs_tree_pt tree,tree_node_pt node){
+void bs_insert(bs_tree_pt tree,tree_node_pt node){
 	tree_node_pt x=tree->root;
 	tree_node_pt y=tree->nil;
 	compare_func_t cmp=tree->compare;
@@ -154,7 +154,7 @@ static void recursive_free_sub(bs_tree_pt tree,tree_node_pt sub_root){
 	sub_root=NIL;
 }
 
-void free_sub(bs_tree_pt tree,tree_node_pt sub_root){
+void free_subtree(bs_tree_pt tree,tree_node_pt sub_root){
 	if(sub_root==tree->nil) return;
 	if(sub_root==tree->root){
 		tree->root=tree->nil;
@@ -167,7 +167,7 @@ void free_sub(bs_tree_pt tree,tree_node_pt sub_root){
 }
 
 void free_tree(bs_tree_pt tree){
-	free_sub(tree,tree->root);
+	free_subtree(tree,tree->root);
 	free(tree->nil);
 	tree->nil=NIL;
 	free(tree);
@@ -245,11 +245,11 @@ void postorder_walk_sub(bs_tree_pt tree,tree_node_pt sub_root,node_predicate_t f
 	func(sub_root);
 }
 
-tree_node_pt search_tree(bs_tree_cpt tree,elem_t satellite){
-	return search_subtree(tree,tree->root,satellite);
+tree_node_pt bs_search(bs_tree_cpt tree,elem_t satellite){
+	return bs_search_sub(tree,tree->root,satellite);
 }
 
-tree_node_pt search_subtree(bs_tree_cpt tree,tree_node_pt sub_root,elem_t satellite){
+tree_node_pt bs_search_sub(bs_tree_cpt tree,tree_node_pt sub_root,elem_t satellite){
 	int flag;
 	while(sub_root!=tree->nil){
 		flag=tree->compare(satellite,sub_root->satellite);

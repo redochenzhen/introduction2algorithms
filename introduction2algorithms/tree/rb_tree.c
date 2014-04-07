@@ -25,7 +25,7 @@ tree_node_pt rb_new_node(elem_t satellite){
 }
 
 bs_tree_pt rb_new_tree(compare_func_t compare){
-	bs_tree_pt tree=new_tree(compare);
+	bs_tree_pt tree=bs_new_tree(compare);
 	tree->nil=rb_new_node(NIL);
 	tree->nil->color=RB_BLACK;
 	tree->root=tree->nil;
@@ -35,7 +35,7 @@ bs_tree_pt rb_new_tree(compare_func_t compare){
 
 void rb_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,longsize_t length){
 	longsize_t i;
-	free_sub(tree,tree->root);
+	free_subtree(tree,tree->root);
 	if(length<=0) return;
 	for(i=0;i<length;++i){
 		rb_insert(tree,rb_new_node(satellite_arr[i]));
@@ -43,7 +43,7 @@ void rb_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,longsize_t length){
 }
 
 void rb_insert(bs_tree_pt tree,tree_node_pt node){
-	insert_node(tree,node);
+	bs_insert(tree,node);
 	node->color=RB_RED;
 	insert_fixup(tree,node);
 }
