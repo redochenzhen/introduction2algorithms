@@ -263,9 +263,9 @@ long int os_rank(bs_tree_pt tree,elem_t satellite){
 	 * “不变量”的编程思想，但分别选择了不同的“不变量”
 	 */
 	//版本1
+	int flag;
 	long int i=0;
 	tree_node_pt node=tree->root;
-	int flag;
 	while(node!=tree->nil){
 		flag=tree->compare(satellite,node->satellite);
 		if(flag<0){

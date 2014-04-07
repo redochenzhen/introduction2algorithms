@@ -65,12 +65,13 @@ tree_node_pt bs_predecessor(bs_tree_cpt tree,tree_node_pt node){
 }
 
 void bs_insert(bs_tree_pt tree,tree_node_pt node){
+	int flag;
 	tree_node_pt x=tree->root;
 	tree_node_pt y=tree->nil;
-	compare_func_t cmp=tree->compare;
 	while(x!=tree->nil){
 		y=x;
-		if(cmp(node->satellite,x->satellite)<0){
+		flag=tree->compare(node->satellite,x->satellite);
+		if(flag<0){
 			x=x->left;
 		}else{
 			x=x->right;
@@ -80,7 +81,7 @@ void bs_insert(bs_tree_pt tree,tree_node_pt node){
 	//插入之前tree是空树
 	if(y==tree->nil){
 		tree->root=node;
-	}else if(cmp(node->satellite,y->satellite)<0){
+	}else if(flag<0){
 		y->left=node;
 	}else{
 		y->right=node;

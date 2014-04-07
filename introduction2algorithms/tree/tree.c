@@ -25,7 +25,7 @@ tree_node_pt new_node(elem_t satellite){
 }
 
 void transplant_node(bs_tree_pt tree,tree_node_pt from,tree_node_pt to){
-	if(to->parent==tree->nil){
+	if(to==tree->root){
 		tree->root=from;
 	}else if(to==to->parent->left){
 		to->parent->left=from;
@@ -120,9 +120,9 @@ static void recursive_free_sub(bs_tree_pt tree,tree_node_pt sub_root){
 		recursive_free_sub(tree,sub_root->right);
 	}
 	free(sub_root);
-	sub_root=NIL;
 }
 
+//free_subtree之后得到的是一颗空树，tree->nil可能还占空间
 void free_subtree(bs_tree_pt tree,tree_node_pt sub_root){
 	if(sub_root==tree->nil) return;
 	if(sub_root==tree->root){
@@ -140,5 +140,4 @@ void free_tree(bs_tree_pt tree){
 	free(tree->nil);
 	tree->nil=NIL;
 	free(tree);
-	tree=NIL;
 }
