@@ -1,5 +1,5 @@
 /*
- * tree.c
+ * bs_tree.c
  *
  *  Created on: 2014年4月1日
  *      Author: Coeus
@@ -8,20 +8,14 @@
 #include "tree.h"
 #include <stdlib.h>
 
-static int integer_cmp(elem_t x,elem_t y);
-
-tree_node_pt new_node(elem_t satellite){
-	tree_node_pt node=(tree_node_pt)malloc(sizeof(tree_node_t));
-	node->satellite=satellite;
-	return node;
-}
+static int default_compare(elem_t x,elem_t y);
 
 bs_tree_pt bs_new_tree(compare_func_t compare){
 	bs_tree_pt tree=(bs_tree_pt)malloc(sizeof(bs_tree_t));
 	tree->nil=NIL;
 	tree->root=NIL;
 	tree->type=TREE_BS;
-	tree->compare=compare!=NIL?compare:integer_cmp;
+	tree->compare=compare!=NIL?compare:default_compare;
 	return tree;
 }
 
@@ -34,7 +28,7 @@ void bs_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,int length){
 	}
 }
 
-tree_node_pt minimum_sub(bs_tree_cpt tree,tree_node_pt sub_root){
+tree_node_pt bs_minimum_sub(bs_tree_cpt tree,tree_node_pt sub_root){
 	tree_node_pt min=sub_root;
 	while(min->left!=tree->nil){
 		min=min->left;
@@ -42,7 +36,7 @@ tree_node_pt minimum_sub(bs_tree_cpt tree,tree_node_pt sub_root){
 	return min;
 }
 
-tree_node_pt maximum_sub(bs_tree_cpt tree,tree_node_pt sub_root){
+tree_node_pt bs_maximum_sub(bs_tree_cpt tree,tree_node_pt sub_root){
 	tree_node_pt max=sub_root;
 	while(max->right!=tree->nil){
 		max=max->right;
@@ -50,9 +44,9 @@ tree_node_pt maximum_sub(bs_tree_cpt tree,tree_node_pt sub_root){
 	return max;
 }
 
-tree_node_pt successor(bs_tree_cpt tree,tree_node_pt node){
+tree_node_pt bs_successor(bs_tree_cpt tree,tree_node_pt node){
 	if(node->right!=tree->nil){
-		return minimum_sub(tree,node->right);
+		return bs_minimum_sub(tree,node->right);
 	}
 	while(node!=tree->root&&node==node->parent->right){
 		node=node->parent;
@@ -60,9 +54,9 @@ tree_node_pt successor(bs_tree_cpt tree,tree_node_pt node){
 	return node->parent;
 }
 
-tree_node_pt predecessor(bs_tree_cpt tree,tree_node_pt node){
+tree_node_pt bs_predecessor(bs_tree_cpt tree,tree_node_pt node){
 	if(node->left!=tree->nil){
-		return maximum_sub(tree,node->left);
+		return bs_maximum_sub(tree,node->left);
 	}
 	while(node!=tree->root&&node==node->parent->left){
 		node=node->parent;
@@ -96,27 +90,13 @@ void bs_insert(bs_tree_pt tree,tree_node_pt node){
 	node->right=tree->nil;
 }
 
-void transplant_node(bs_tree_pt tree,tree_node_pt from,tree_node_pt to){
-	if(to->parent==tree->nil){
-		tree->root=from;
-	}else if(to==to->parent->left){
-		to->parent->left=from;
-	}else{
-		to->parent->right=from;
-	}
-	if(from!=NIL){
-		//在红黑树中，即使from是nil，nil->parent也暂时指向to->parent
-		from->parent=to->parent;
-	}
-}
-
-tree_node_pt delete_node(bs_tree_pt tree,const tree_node_pt node){
+tree_node_pt bs_delete(bs_tree_pt tree,const tree_node_pt node){
 	if(node->left==tree->nil){
 		transplant_node(tree,node->right,node);
 	}else if(node->right==tree->nil){
 		transplant_node(tree,node->left,node);
 	}else{
-		tree_node_pt min=minimum_sub(tree,node->right);
+		tree_node_pt min=bs_minimum_sub(tree,node->right);
 		//对右子树最小节点不是右节点的情况进行转化
 		if(node!=min->parent){
 			transplant_node(tree,min->right,min);
@@ -131,118 +111,6 @@ tree_node_pt delete_node(bs_tree_pt tree,const tree_node_pt node){
 	node->left=NIL;
 	node->right=NIL;
 	return node;
-}
-
-#ifdef _WIN32
-BOOL is_tree_empty(bs_tree_cpt tree){
-	return tree->root==tree->nil;
-}
-#else
-bool is_tree_empty(bs_tree_cpt tree){
-	return tree->root==tree->nil;
-}
-#endif
-
-static void recursive_free_sub(bs_tree_pt tree,tree_node_pt sub_root){
-	if(sub_root->left!=tree->nil){
-		recursive_free_sub(tree,sub_root->left);
-	}
-	if(sub_root->right!=tree->nil){
-		recursive_free_sub(tree,sub_root->right);
-	}
-	free(sub_root);
-	sub_root=NIL;
-}
-
-void free_subtree(bs_tree_pt tree,tree_node_pt sub_root){
-	if(sub_root==tree->nil) return;
-	if(sub_root==tree->root){
-		tree->root=tree->nil;
-	}else if(sub_root==sub_root->parent->left){
-		sub_root->parent->left=tree->nil;
-	}else{
-		sub_root->parent->right=tree->nil;
-	}
-	recursive_free_sub(tree,sub_root);
-}
-
-void free_tree(bs_tree_pt tree){
-	free_subtree(tree,tree->root);
-	free(tree->nil);
-	tree->nil=NIL;
-	free(tree);
-	tree=NIL;
-}
-
-void left_rotate(bs_tree_pt tree,tree_node_pt node){
-	tree_node_pt r;
-	if(node->right==tree->nil) return;
-	r=node->right;
-	node->right=r->left;
-	if(r->left!=tree->nil){
-		r->left->parent=node;
-	}
-	r->parent=node->parent;
-	//旋转跟节点后需要修复tree->root
-	if(node==tree->root){
-		tree->root=r;
-	}else if(node==node->parent->left){
-		node->parent->left=r;
-	}else{
-		node->parent->right=r;
-	}
-	node->parent=r;
-	r->left=node;
-}
-
-void right_rotate(bs_tree_pt tree,tree_node_pt node){
-	tree_node_pt l;
-	if(node->left==tree->nil) return;
-	l=node->left;
-	node->left=l->right;
-	if(l->right!=tree->nil){
-		l->right->parent=node;
-	}
-	l->parent=node->parent;
-	if(node==tree->root){
-		tree->root=l;
-	}else if(node==node->parent->right){
-		node->parent->right=l;
-	}else{
-		node->parent->left=l;
-	}
-	node->parent=l;
-	l->right=node;
-}
-
-void inorder_walk(bs_tree_pt tree,node_predicate_t func){
-	inorder_walk_sub(tree,tree->root,func);
-}
-
-void inorder_walk_sub(bs_tree_pt tree,tree_node_pt sub_root,node_predicate_t func){
-	if(sub_root==tree->nil) return;
-	inorder_walk_sub(tree,sub_root->left,func);
-	func(sub_root);
-	inorder_walk_sub(tree,sub_root->right,func);
-}
-
-void preorder_walk(bs_tree_pt tree,node_predicate_t func){
-	preorder_walk_sub(tree,tree->root,func);
-}
-void preorder_walk_sub(bs_tree_pt tree,tree_node_pt sub_root,node_predicate_t func){
-	if(sub_root==tree->nil) return;
-	func(sub_root);
-	preorder_walk_sub(tree,sub_root->left,func);
-	preorder_walk_sub(tree,sub_root->right,func);
-}
-void postorder_walk(bs_tree_pt tree,node_predicate_t func){
-	postorder_walk_sub(tree,tree->root,func);
-}
-void postorder_walk_sub(bs_tree_pt tree,tree_node_pt sub_root,node_predicate_t func){
-	if(sub_root==tree->nil) return;
-	postorder_walk_sub(tree,sub_root->left,func);
-	postorder_walk_sub(tree,sub_root->right,func);
-	func(sub_root);
 }
 
 tree_node_pt bs_search(bs_tree_cpt tree,elem_t satellite){
@@ -266,10 +134,11 @@ tree_node_pt bs_search_sub(bs_tree_cpt tree,tree_node_pt sub_root,elem_t satelli
 	return sub_root;
 }
 
-int integer_cmp(elem_t x,elem_t y){
+//默认将satellite当作long int来比较
+int default_compare(elem_t x,elem_t y){
 	long int n=(long int)x-(long int)y;
-	if(n>0) return 1;
-	if(n<0) return -1;
+	if(n>0L) return 1;
+	if(n<0L) return -1;
 	return 0;
 }
 

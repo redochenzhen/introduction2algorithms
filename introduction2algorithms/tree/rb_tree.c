@@ -101,7 +101,7 @@ tree_node_pt rb_delete(bs_tree_pt tree,const tree_node_pt node){
 		del=node->left;
 		transplant_node(tree,node->left,node);
 	}else{
-		del=minimum_sub(tree,del->right);
+		del=bs_minimum_sub(tree,del->right);
 		d_color=del->color;
 		del->color=node->color;
 		//对右子树最小节点不是右节点的情况进行转化

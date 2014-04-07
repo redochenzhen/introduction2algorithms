@@ -67,12 +67,12 @@ void right_rotate(bs_tree_pt tree,tree_node_pt node);
 //bs tree fuction
 bs_tree_pt bs_new_tree(compare_func_t compare);
 void bs_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,int length);
-tree_node_pt minimum_sub(bs_tree_cpt tree,tree_node_pt sub_root);
-tree_node_pt maximum_sub(bs_tree_cpt tree,tree_node_pt sub_root);
-tree_node_pt successor(bs_tree_cpt tree,tree_node_pt node);
-tree_node_pt predecessor(bs_tree_cpt tree,tree_node_pt node);
+tree_node_pt bs_minimum_sub(bs_tree_cpt tree,tree_node_pt sub_root);
+tree_node_pt bs_maximum_sub(bs_tree_cpt tree,tree_node_pt sub_root);
+tree_node_pt bs_successor(bs_tree_cpt tree,tree_node_pt node);
+tree_node_pt bs_predecessor(bs_tree_cpt tree,tree_node_pt node);
 //node形参的展开类型：tree_node_t *const
-tree_node_pt delete_node(bs_tree_pt tree,const tree_node_pt node);
+tree_node_pt bs_delete(bs_tree_pt tree,const tree_node_pt node);
 void bs_insert(bs_tree_pt tree,tree_node_pt node);
 tree_node_pt bs_search(bs_tree_cpt tree,elem_t satellite);
 tree_node_pt bs_search_sub(bs_tree_cpt tree,tree_node_pt sub_root,elem_t satellite);

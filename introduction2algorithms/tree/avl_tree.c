@@ -84,11 +84,11 @@ tree_node_pt avl_delete(bs_tree_pt tree,const tree_node_pt node){
 	}else if(del->right==tree->nil){
 		del=del->left;
 	}else{
-		del=minimum_sub(tree,del->right);
+		del=bs_minimum_sub(tree,del->right);
 		del->bf=node->bf;
 		del=del->right;
 	}
-	delete_node(tree,node);
+	bs_delete(tree,node);
 	//此时del可能指向nil，但是delete_node方法保证nil->parent暂时有意义
 	delete_fixup(tree,del);
 	return node;
