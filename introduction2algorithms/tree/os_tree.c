@@ -315,10 +315,11 @@ long int os_rank(bs_tree_pt tree,elem_t satellite){
 }
 
 long int os_rank_node(bs_tree_pt tree,tree_node_pt node){
+	long int i;
 	if(node==NIL||node==tree->nil){
 		return -1;
 	}
-	long int i=node->left->size;
+	i=node->left->size;
 	while(node!=tree->root){
 		if(node==node->parent->right){
 			i+=node->parent->left->size+1;

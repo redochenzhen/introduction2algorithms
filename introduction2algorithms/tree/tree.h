@@ -29,7 +29,7 @@ typedef struct _tree_node{
 	};
 	union{
 		longsize_t size;
-		ext_t extproperty;
+		ext_t property;
 	};
 	elem_t satellite;
 }tree_node_t;
