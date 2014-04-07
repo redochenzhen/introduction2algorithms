@@ -260,7 +260,7 @@ tree_node_pt os_select(bs_tree_pt tree,long int index){
 long int os_rank(bs_tree_pt tree,elem_t satellite){
 	/*
 	 * 比较版本1和版本2很有意思，两者都体现了一种维持
-	 * “不变量”的编程思想，但分别选择了不同的“不变量”
+	 * “不变式”的编程思想，但分别选择了不同的“不变式”
 	 */
 	//版本1
 	int flag;
