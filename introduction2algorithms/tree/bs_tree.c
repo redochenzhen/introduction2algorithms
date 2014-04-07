@@ -19,11 +19,29 @@ bs_tree_pt bs_new_tree(compare_func_t compare){
 	return tree;
 }
 
-void bs_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,int length){
-	int i;
+
+void bs_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,long int length){
+	long int i;
 	free_subtree(tree,tree->root);
-	if(length<=0) return;
 	for(i=0;i<length;++i){
+		bs_insert(tree,new_node(satellite_arr[i]));
+	}
+}
+
+static void elem_swap(elem_t* x,elem_t* y){
+	elem_t tmp=*x;
+	*x=*y;
+	*y=tmp;
+}
+
+//会导致数据源随机排列
+void bs_reset_tree_randomize(bs_tree_pt tree,elem_arr_t satellite_arr,long int length){
+	long int i;
+	long int r;
+	free_subtree(tree,tree->root);
+	for(i=length-1;i>=0;--i){
+		r=random()%(i+1);
+		elem_swap(&satellite_arr[r],&satellite_arr[i]);
 		bs_insert(tree,new_node(satellite_arr[i]));
 	}
 }
