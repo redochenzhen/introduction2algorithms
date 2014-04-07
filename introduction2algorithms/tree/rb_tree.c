@@ -9,8 +9,8 @@
 #include <stdlib.h>
 
 /*
- * 带色旋转，如果下色是红色，不会引起任何黑高改变；
- * 如果下色是黑色，会引起旋转轴的子节点黑高减1，兄弟节点的黑高加1
+ * 带色旋转，如果下色是红色，不会引起任何黑高改变；如果下
+ * 色是黑色，会引起上节点的黑高加1，旋转轴的子节点黑高减1
  */
 static void left_rotate_with_color(bs_tree_pt tree,tree_node_pt node);
 static void right_rotate_with_color(bs_tree_pt tree,tree_node_pt node);
