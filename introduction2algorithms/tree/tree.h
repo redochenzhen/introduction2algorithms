@@ -28,7 +28,7 @@ typedef struct _tree_node{
 		int bf;
 	};
 	union{
-		longsize_t size;
+		long int size;
 		ext_t property;
 	};
 	elem_t satellite;
@@ -66,7 +66,7 @@ void right_rotate(bs_tree_pt tree,tree_node_pt node);
 
 //bs tree fuction
 bs_tree_pt bs_new_tree(compare_func_t compare);
-void bs_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,int length);
+void bs_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,long int length);
 tree_node_pt bs_minimum_sub(bs_tree_cpt tree,tree_node_pt sub_root);
 tree_node_pt bs_maximum_sub(bs_tree_cpt tree,tree_node_pt sub_root);
 tree_node_pt bs_successor(bs_tree_cpt tree,tree_node_pt node);
@@ -81,14 +81,14 @@ tree_node_pt bs_search_sub(bs_tree_cpt tree,tree_node_pt sub_root,elem_t satelli
 //rb tree fuction
 tree_node_pt rb_new_node(elem_t satellite);
 bs_tree_pt rb_new_tree(compare_func_t compare);
-void rb_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,longsize_t length);
+void rb_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,long int length);
 void rb_insert(bs_tree_pt tree,tree_node_pt node);
 tree_node_pt rb_delete(bs_tree_pt tree,const tree_node_pt node);
 
 //os tree function
 tree_node_pt os_new_node(elem_t satellite);
 bs_tree_pt os_new_tree(compare_func_t compare);
-void os_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,longsize_t length);
+void os_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,long int length);
 void os_insert(bs_tree_pt tree,tree_node_pt node);
 tree_node_pt os_delete(bs_tree_pt tree,const tree_node_pt node);
 tree_node_pt os_select(bs_tree_pt tree,long int index);
@@ -98,7 +98,7 @@ long int os_rank_node(bs_tree_pt tree,tree_node_pt node);
 //avl tree fuction
 tree_node_pt avl_new_node(elem_t satellite);
 bs_tree_pt avl_new_tree(compare_func_t compare);
-void avl_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,longsize_t length);
+void avl_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,long int length);
 void avl_insert(bs_tree_pt tree,tree_node_pt node);
 tree_node_pt avl_delete(bs_tree_pt tree,const tree_node_pt node);
 

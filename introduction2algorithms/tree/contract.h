@@ -25,6 +25,5 @@ typedef int BOOL;
 #define VOID_INT_MIN ((void*)INT_MIN)
 typedef enum{false=0,true=1}bool;
 #endif
-typedef unsigned long int longsize_t;
 
 #endif /* CONTRACT_H_ */
