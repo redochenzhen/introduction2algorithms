@@ -1,137 +1,12 @@
 /*
  * tree.c
  *
- *  Created on: 2014年4月1日
- *      Author: Coeus
+ *  Created on: 2014年4月7日
+ *      Author: coeus
  */
 
 #include "tree.h"
 #include <stdlib.h>
-
-static int integer_cmp(elem_t x,elem_t y);
-
-tree_node_pt new_node(void* satellite){
-	tree_node_pt node=(tree_node_pt)malloc(sizeof(tree_node_t));
-	node->satellite=satellite;
-	return node;
-}
-
-bs_tree_pt new_tree(compare_func_t compare){
-	bs_tree_pt tree=(bs_tree_pt)malloc(sizeof(bs_tree_t));
-	tree->nil=NIL;
-	tree->root=NIL;
-	tree->type=TREE_BS;
-	tree->compare=compare!=NIL?compare:integer_cmp;
-	return tree;
-}
-
-void reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,int length){
-	int i;
-	free_sub(tree,tree->root);
-	if(length<=0) return;
-	for(i=0;i<length;++i){
-		insert_node(tree,new_node(satellite_arr[i]));
-	}
-}
-
-tree_node_pt minimum_sub(bs_tree_cpt tree,tree_node_pt sub_root){
-	tree_node_pt min=sub_root;
-	while(min->left!=tree->nil){
-		min=min->left;
-	}
-	return min;
-}
-
-tree_node_pt maximum_sub(bs_tree_cpt tree,tree_node_pt sub_root){
-	tree_node_pt max=sub_root;
-	while(max->right!=tree->nil){
-		max=max->right;
-	}
-	return max;
-}
-
-tree_node_pt successor(bs_tree_cpt tree,tree_node_pt node){
-	if(node->right!=tree->nil){
-		return minimum_sub(tree,node->right);
-	}
-	while(node!=tree->root&&node==node->parent->right){
-		node=node->parent;
-	}
-	return node->parent;
-}
-
-tree_node_pt predecessor(bs_tree_cpt tree,tree_node_pt node){
-	if(node->left!=tree->nil){
-		return maximum_sub(tree,node->left);
-	}
-	while(node!=tree->root&&node==node->parent->left){
-		node=node->parent;
-	}
-	return node->parent;
-}
-
-void insert_node(bs_tree_pt tree,tree_node_pt node){
-	tree_node_pt x=tree->root;
-	tree_node_pt y=tree->nil;
-	compare_func_t cmp=tree->compare;
-	while(x!=tree->nil){
-		y=x;
-		if(cmp(node->satellite,x->satellite)<0){
-			x=x->left;
-		}else{
-			x=x->right;
-		}
-	}
-	node->parent=y;
-	//插入之前tree是空树
-	if(y==tree->nil){
-		tree->root=node;
-	}else if(cmp(node->satellite,y->satellite)<0){
-		y->left=node;
-	}else{
-		y->right=node;
-	}
-	//插入是外来节点跟树发生关系的唯一入口，这里保证了新节点的left和right指向nil
-	node->left=tree->nil;
-	node->right=tree->nil;
-}
-
-void transplant_node(bs_tree_pt tree,tree_node_pt from,tree_node_pt to){
-	if(to->parent==tree->nil){
-		tree->root=from;
-	}else if(to==to->parent->left){
-		to->parent->left=from;
-	}else{
-		to->parent->right=from;
-	}
-	if(from!=NIL){
-		//在红黑树中，即使from是nil，nil->parent也暂时指向to->parent
-		from->parent=to->parent;
-	}
-}
-
-tree_node_pt delete_node(bs_tree_pt tree,const tree_node_pt node){
-	if(node->left==tree->nil){
-		transplant_node(tree,node->right,node);
-	}else if(node->right==tree->nil){
-		transplant_node(tree,node->left,node);
-	}else{
-		tree_node_pt min=minimum_sub(tree,node->right);
-		//对右子树最小节点不是右节点的情况进行转化
-		if(node!=min->parent){
-			transplant_node(tree,min->right,min);
-			min->right=node->right;
-			min->right->parent=min;
-		}
-		transplant_node(tree,min,node);
-		min->left=node->left;
-		min->left->parent=min;
-	}
-	node->parent=NIL;
-	node->left=NIL;
-	node->right=NIL;
-	return node;
-}
 
 #ifdef _WIN32
 BOOL is_tree_empty(bs_tree_cpt tree){
@@ -143,35 +18,24 @@ bool is_tree_empty(bs_tree_cpt tree){
 }
 #endif
 
-static void recursive_free_sub(bs_tree_pt tree,tree_node_pt sub_root){
-	if(sub_root->left!=tree->nil){
-		recursive_free_sub(tree,sub_root->left);
-	}
-	if(sub_root->right!=tree->nil){
-		recursive_free_sub(tree,sub_root->right);
-	}
-	free(sub_root);
-	sub_root=NIL;
+tree_node_pt new_node(elem_t satellite){
+	tree_node_pt node=(tree_node_pt)malloc(sizeof(tree_node_t));
+	node->satellite=satellite;
+	return node;
 }
 
-void free_sub(bs_tree_pt tree,tree_node_pt sub_root){
-	if(sub_root==tree->nil) return;
-	if(sub_root==tree->root){
-		tree->root=tree->nil;
-	}else if(sub_root==sub_root->parent->left){
-		sub_root->parent->left=tree->nil;
+void transplant_node(bs_tree_pt tree,tree_node_pt from,tree_node_pt to){
+	if(to==tree->root){
+		tree->root=from;
+	}else if(to==to->parent->left){
+		to->parent->left=from;
 	}else{
-		sub_root->parent->right=tree->nil;
+		to->parent->right=from;
 	}
-	recursive_free_sub(tree,sub_root);
-}
-
-void free_tree(bs_tree_pt tree){
-	free_sub(tree,tree->root);
-	free(tree->nil);
-	tree->nil=NIL;
-	free(tree);
-	tree=NIL;
+	if(from!=NIL){
+		//即使from是nil，nil->parent也暂时指向to->parent
+		from->parent=to->parent;
+	}
 }
 
 void left_rotate(bs_tree_pt tree,tree_node_pt node){
@@ -229,15 +93,18 @@ void inorder_walk_sub(bs_tree_pt tree,tree_node_pt sub_root,node_predicate_t fun
 void preorder_walk(bs_tree_pt tree,node_predicate_t func){
 	preorder_walk_sub(tree,tree->root,func);
 }
+
 void preorder_walk_sub(bs_tree_pt tree,tree_node_pt sub_root,node_predicate_t func){
 	if(sub_root==tree->nil) return;
 	func(sub_root);
 	preorder_walk_sub(tree,sub_root->left,func);
 	preorder_walk_sub(tree,sub_root->right,func);
 }
+
 void postorder_walk(bs_tree_pt tree,node_predicate_t func){
 	postorder_walk_sub(tree,tree->root,func);
 }
+
 void postorder_walk_sub(bs_tree_pt tree,tree_node_pt sub_root,node_predicate_t func){
 	if(sub_root==tree->nil) return;
 	postorder_walk_sub(tree,sub_root->left,func);
@@ -245,31 +112,32 @@ void postorder_walk_sub(bs_tree_pt tree,tree_node_pt sub_root,node_predicate_t f
 	func(sub_root);
 }
 
-tree_node_pt search_tree(bs_tree_cpt tree,elem_t satellite){
-	return search_subtree(tree,tree->root,satellite);
-}
-
-tree_node_pt search_subtree(bs_tree_cpt tree,tree_node_pt sub_root,elem_t satellite){
-	int flag;
-	while(sub_root!=tree->nil){
-		flag=tree->compare(satellite,sub_root->satellite);
-		if(flag==0) break;
-		if(flag<0){
-			sub_root=sub_root->left;
-		}else{
-			sub_root=sub_root->right;
-		}
+static void recursive_free_sub(bs_tree_pt tree,tree_node_pt sub_root){
+	if(sub_root->left!=tree->nil){
+		recursive_free_sub(tree,sub_root->left);
 	}
-	if(sub_root==tree->nil){
-		return NIL;
+	if(sub_root->right!=tree->nil){
+		recursive_free_sub(tree,sub_root->right);
 	}
-	return sub_root;
+	free(sub_root);
 }
 
-int integer_cmp(elem_t x,elem_t y){
-	long int n=(long int)x-(long int)y;
-	if(n>0) return 1;
-	if(n<0) return -1;
-	return 0;
+//free_subtree之后得到的是一颗空树，tree->nil可能还占空间
+void free_subtree(bs_tree_pt tree,tree_node_pt sub_root){
+	if(sub_root==tree->nil) return;
+	if(sub_root==tree->root){
+		tree->root=tree->nil;
+	}else if(sub_root==sub_root->parent->left){
+		sub_root->parent->left=tree->nil;
+	}else{
+		sub_root->parent->right=tree->nil;
+	}
+	recursive_free_sub(tree,sub_root);
 }
 
+void free_tree(bs_tree_pt tree){
+	free_subtree(tree,tree->root);
+	free(tree->nil);
+	tree->nil=NIL;
+	free(tree);
+}

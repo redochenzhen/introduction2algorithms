@@ -23,16 +23,16 @@ tree_node_pt avl_new_node(elem_t satellite){
 }
 
 bs_tree_pt avl_new_tree(compare_func_t compare){
-	bs_tree_pt tree=new_tree(compare);
+	bs_tree_pt tree=bs_new_tree(compare);
 	tree->nil=avl_new_node(NIL);
 	tree->root=tree->nil;
 	tree->type=TREE_AVL;
 	return tree;
 }
 
-void avl_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,longsize_t length){
-	longsize_t i;
-	free_sub(tree,tree->root);
+void avl_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,long int length){
+	long int i;
+	free_subtree(tree,tree->root);
 	if(length<=0) return;
 	for(i=0;i<length;++i){
 		avl_insert(tree,avl_new_node(satellite_arr[i]));
@@ -40,7 +40,7 @@ void avl_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,longsize_t length){
 }
 
 void avl_insert(bs_tree_pt tree,tree_node_pt node){
-	insert_node(tree,node);
+	bs_insert(tree,node);
 	node->bf=0;
 	insert_fixup(tree,node);
 }
@@ -84,11 +84,11 @@ tree_node_pt avl_delete(bs_tree_pt tree,const tree_node_pt node){
 	}else if(del->right==tree->nil){
 		del=del->left;
 	}else{
-		del=minimum_sub(tree,del->right);
+		del=bs_minimum_sub(tree,del->right);
 		del->bf=node->bf;
 		del=del->right;
 	}
-	delete_node(tree,node);
+	bs_delete(tree,node);
 	//此时del可能指向nil，但是delete_node方法保证nil->parent暂时有意义
 	delete_fixup(tree,del);
 	return node;

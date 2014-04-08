@@ -29,9 +29,9 @@ bs_tree_pt os_new_tree(compare_func_t compare){
 	return tree;
 }
 
-void os_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,longsize_t length){
-	longsize_t i;
-	free_sub(tree,tree->root);
+void os_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,long int length){
+	long int i;
+	free_subtree(tree,tree->root);
 	if(length<=0) return;
 	for(i=0;i<length;++i){
 		os_insert(tree,os_new_node(satellite_arr[i]));
@@ -124,7 +124,7 @@ tree_node_pt os_delete(bs_tree_pt tree,const tree_node_pt node){
 		del=node->left;
 		transplant_node(tree,node->left,node);
 	}else{
-		del=minimum_sub(tree,del->right);
+		del=bs_minimum_sub(tree,del->right);
 		d_color=del->color;
 		del->color=node->color;
 		//对右子树最小节点不是右节点的情况进行转化
@@ -263,9 +263,9 @@ long int os_rank(bs_tree_pt tree,elem_t satellite){
 	 * “不变量”的编程思想，但分别选择了不同的“不变量”
 	 */
 	//版本1
+	int flag;
 	long int i=0;
 	tree_node_pt node=tree->root;
-	int flag;
 	while(node!=tree->nil){
 		flag=tree->compare(satellite,node->satellite);
 		if(flag<0){
