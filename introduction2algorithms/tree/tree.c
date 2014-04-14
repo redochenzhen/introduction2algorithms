@@ -8,15 +8,9 @@
 #include "tree.h"
 #include <stdlib.h>
 
-#ifdef _WIN32
 BOOL is_tree_empty(bs_tree_cpt tree){
 	return tree->root==tree->nil;
 }
-#else
-bool is_tree_empty(bs_tree_cpt tree){
-	return tree->root==tree->nil;
-}
-#endif
 
 tree_node_pt new_node(elem_t satellite){
 	tree_node_pt node=(tree_node_pt)malloc(sizeof(tree_node_t));
@@ -112,19 +106,8 @@ void postorder_walk_sub(bs_tree_pt tree,tree_node_pt sub_root,node_predicate_t f
 	func(sub_root);
 }
 
-static void recursive_free_sub(bs_tree_pt tree,tree_node_pt sub_root){
-	if(sub_root->left!=tree->nil){
-		recursive_free_sub(tree,sub_root->left);
-	}
-	if(sub_root->right!=tree->nil){
-		recursive_free_sub(tree,sub_root->right);
-	}
-	free(sub_root);
-}
-
-//free_subtree之后得到的是一颗空树，tree->nil可能还占空间
-void free_subtree(bs_tree_pt tree,tree_node_pt sub_root){
-	if(sub_root==tree->nil) return;
+//make_sub_empty(如果参数为root)之后得到的是一颗空树，tree->nil可能还占空间
+void make_sub_empty(bs_tree_pt tree,tree_node_pt sub_root){
 	if(sub_root==tree->root){
 		tree->root=tree->nil;
 	}else if(sub_root==sub_root->parent->left){
@@ -132,11 +115,11 @@ void free_subtree(bs_tree_pt tree,tree_node_pt sub_root){
 	}else{
 		sub_root->parent->right=tree->nil;
 	}
-	recursive_free_sub(tree,sub_root);
+	postorder_walk_sub(tree,sub_root,free);
 }
 
 void free_tree(bs_tree_pt tree){
-	free_subtree(tree,tree->root);
+	make_sub_empty(tree,tree->root);
 	free(tree->nil);
 	tree->nil=NIL;
 	free(tree);

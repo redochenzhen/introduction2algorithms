@@ -35,7 +35,7 @@ bs_tree_pt rb_new_tree(compare_func_t compare){
 
 void rb_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,long int length){
 	long int i;
-	free_subtree(tree,tree->root);
+	make_sub_empty(tree,tree->root);
 	if(length<=0) return;
 	for(i=0;i<length;++i){
 		rb_insert(tree,rb_new_node(satellite_arr[i]));

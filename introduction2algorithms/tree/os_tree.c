@@ -31,7 +31,7 @@ bs_tree_pt os_new_tree(compare_func_t compare){
 
 void os_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,long int length){
 	long int i;
-	free_subtree(tree,tree->root);
+	make_sub_empty(tree,tree->root);
 	if(length<=0) return;
 	for(i=0;i<length;++i){
 		os_insert(tree,os_new_node(satellite_arr[i]));
@@ -260,7 +260,7 @@ tree_node_pt os_select(bs_tree_pt tree,long int index){
 long int os_rank(bs_tree_pt tree,elem_t satellite){
 	/*
 	 * 比较版本1和版本2很有意思，两者都体现了一种维持
-	 * “不变量”的编程思想，但分别选择了不同的“不变量”
+	 * “不变式”的编程思想，但分别选择了不同的“不变式”
 	 */
 	//版本1
 	int flag;
