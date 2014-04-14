@@ -10,9 +10,6 @@
 
 #ifdef _WIN32
 #define NIL 0
-#define TRUE 1
-#define FALSE 0
-typedef int BOOL;
 #else
 #define NIL ((void*)0)
 #ifndef INT_MAX
@@ -23,7 +20,8 @@ typedef int BOOL;
 #endif
 #define VOID_INT_MAX ((void*)INT_MAX)
 #define VOID_INT_MIN ((void*)INT_MIN)
-typedef enum{false=0,true=1}bool;
+
+typedef enum{FALSE=0,TRUE=1}BOOL;
 #endif
 
 #endif /* CONTRACT_H_ */

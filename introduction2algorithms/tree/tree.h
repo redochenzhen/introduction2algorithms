@@ -46,11 +46,7 @@ typedef struct _bs_tree{
 
 typedef const bs_tree_t* bs_tree_cpt;
 
-#ifdef _WIN32
 BOOL is_tree_empty(bs_tree_cpt tree);
-#else
-bool is_tree_empty(bs_tree_cpt tree);
-#endif
 tree_node_pt new_node(elem_t satellite);
 void inorder_walk(bs_tree_pt tree,node_predicate_t func);
 void inorder_walk_sub(bs_tree_pt tree,tree_node_pt sub_root,node_predicate_t func);
@@ -58,7 +54,7 @@ void preorder_walk(bs_tree_pt tree,node_predicate_t func);
 void preorder_walk_sub(bs_tree_pt tree,tree_node_pt sub_root,node_predicate_t func);
 void postorder_walk(bs_tree_pt tree,node_predicate_t func);
 void postorder_walk_sub(bs_tree_pt tree,tree_node_pt sub_root,node_predicate_t func);
-void free_subtree(bs_tree_pt tree,tree_node_pt sub_root);
+void make_sub_empty(bs_tree_pt tree,tree_node_pt sub_root);
 void free_tree(bs_tree_pt tree);
 void transplant_node(bs_tree_pt tree,tree_node_pt from,tree_node_pt to);
 void left_rotate(bs_tree_pt tree,tree_node_pt node);

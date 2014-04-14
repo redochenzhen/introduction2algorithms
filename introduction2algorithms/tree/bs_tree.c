@@ -22,7 +22,7 @@ bs_tree_pt bs_new_tree(compare_func_t compare){
 
 void bs_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,long int length){
 	long int i;
-	free_subtree(tree,tree->root);
+	make_sub_empty(tree,tree->root);
 	for(i=0;i<length;++i){
 		bs_insert(tree,new_node(satellite_arr[i]));
 	}
@@ -38,7 +38,7 @@ static void elem_swap(elem_t* x,elem_t* y){
 void bs_reset_tree_randomize(bs_tree_pt tree,elem_arr_t satellite_arr,long int length){
 	long int i;
 	long int r;
-	free_subtree(tree,tree->root);
+	make_sub_empty(tree,tree->root);
 	for(i=length-1;i>=0;--i){
 		r=random()%(i+1);
 		elem_swap(&satellite_arr[r],&satellite_arr[i]);
