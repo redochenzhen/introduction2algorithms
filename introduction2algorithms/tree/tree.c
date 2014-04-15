@@ -115,7 +115,7 @@ void make_sub_empty(bs_tree_pt tree,tree_node_pt sub_root){
 	}else{
 		sub_root->parent->right=tree->nil;
 	}
-	postorder_walk_sub(tree,sub_root,free);
+	postorder_walk_sub(tree,sub_root,(node_predicate_t)free);
 }
 
 void free_tree(bs_tree_pt tree){
