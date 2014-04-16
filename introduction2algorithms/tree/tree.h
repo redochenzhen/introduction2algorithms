@@ -8,7 +8,7 @@
 #ifndef TREE_H_
 #define TREE_H_
 
-#include "contract.h"
+#include "../contract.h"
 
 //红黑树的颜色
 typedef enum{RB_RED,RB_BLACK}rb_color_t;
