@@ -12,7 +12,10 @@
 #include <gtest/gtest.h>
 extern "C"{
 #include "tree/tree.h"
+}
 
+#ifdef TREE_TEST
+static bs_tree_pt T=0;
 typedef struct _student{
 	unsigned short age;
 	const char* name;
@@ -29,20 +32,17 @@ int stu_name_cmp(void* x,void* y){
 	const char* y_name=((student_pt)y)->name;
 	return strcmp(x_name,y_name);
 }
-}
-
-static bs_tree_pt T=0;
 
 TEST(TREE,BS_TREE){
 	T=bs_new_tree(0);
-	EXPECT_EQ(TRUE,is_tree_empty(T));
+	EXPECT_TRUE(is_tree_empty(T));
 	bs_reset_tree(T,(elem_arr_t)new long[2]{4,6},2);
-	EXPECT_EQ(FALSE,is_tree_empty(T));
+	EXPECT_FALSE(is_tree_empty(T));
 	EXPECT_EQ(4,(long)T->root->satellite);
 	bs_reset_tree(T,(elem_arr_t)new long[2]{9,1},2);
 	EXPECT_EQ(9,(long)T->root->satellite);
 	make_sub_empty(T,T->root);
-	EXPECT_EQ(TRUE,is_tree_empty(T));
+	EXPECT_TRUE(is_tree_empty(T));
 	//EXPECT_EQ(T->root->parent,T->nil);
 	free_tree(T);
 }
@@ -88,7 +88,7 @@ TEST(TREE,OS_TREE){
 	EXPECT_EQ(3,T->root->left->size);
 	EXPECT_EQ(20,((student_pt)T->root->satellite)->age);
 	tree_node_pt n2=os_select(T,2);
-	EXPECT_EQ("coeus",((student_pt)n2->satellite)->name);
+	EXPECT_STREQ("coeus",((student_pt)n2->satellite)->name);
 	EXPECT_EQ(4,os_rank(T,students[2]));
 	for(int i=0;i<5;++i){
 		delete students[i];
@@ -96,5 +96,5 @@ TEST(TREE,OS_TREE){
 	EXPECT_EQ(T->root->parent,T->nil);
 	free_tree(T);
 }
-
+#endif
 #endif /* TREE_TEST_H_ */

@@ -6,8 +6,12 @@
 // Description : Hello World in C++, Ansi-style
 //============================================================================
 
-#include "tree_test.h"
+//#define TREE_TEST
+//#define DP_TEST
 
+#include <gtest/gtest.h>
+#include "tree_test.h"
+#include "dp_greedy_test.h"
 
 int main(int argc,char* argv[]) {
 	testing::InitGoogleTest(&argc,argv);
