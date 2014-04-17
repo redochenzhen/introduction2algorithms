@@ -15,5 +15,9 @@ int cut_rod(const int price_list[],int list_len,int rod_len,int* rod_count,int l
 //knapsack:
 int knapsack_01(const int weight_lst[],const int value_lst[],int num,int capacity,int* sel_count,int num_lst[]);
 int knapsack_complete(const int weight_lst[],const int value_lst[],int num,int capacity,int* sel_count,int num_lst[]);
+int knapsack_complete2(const int weight_lst[],const int value_lst[],int num,int capacity,int* sel_count,int num_lst[]);
+
+//longest common subsequence
+int lcs(const char* seq1,const char* seq2,char* result);
 
 #endif /* DYNAMIC_PROGRAMMING_H_ */
