@@ -90,7 +90,7 @@ void insert_fixup(bs_tree_pt tree,tree_node_pt node){
 
 tree_node_pt rb_delete(bs_tree_pt tree,const tree_node_pt node){
 	/*
-	 * 跟插入不同，不能简单调用delete_node
+	 * 跟插入不同，不能简单调用bs_delete
 	 */
 	tree_node_pt del=node;
 	rb_color_t d_color=node->color;
