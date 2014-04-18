@@ -7,7 +7,7 @@
 //============================================================================
 
 //#define TREE_TEST
-//#define DP_TEST
+#define DP_TEST
 
 #include <gtest/gtest.h>
 #include "tree_test.h"
