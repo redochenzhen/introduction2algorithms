@@ -8,7 +8,7 @@
 #include "tree.h"
 #include <stdlib.h>
 
-BOOL is_tree_empty(bs_tree_cpt tree){
+bool is_tree_empty(bs_tree_cpt tree){
 	return tree->root==tree->nil;
 }
 
@@ -120,7 +120,8 @@ void make_sub_empty(bs_tree_pt tree,tree_node_pt sub_root){
 
 void free_tree(bs_tree_pt tree){
 	make_sub_empty(tree,tree->root);
-	free(tree->nil);
-	tree->nil=NIL;
+	if(tree->nil){
+		free(tree->nil);
+	}
 	free(tree);
 }

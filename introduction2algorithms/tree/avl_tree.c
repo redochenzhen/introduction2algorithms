@@ -30,8 +30,8 @@ bs_tree_pt avl_new_tree(compare_func_t compare){
 	return tree;
 }
 
-void avl_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,long int length){
-	long int i;
+void avl_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,long length){
+	long i;
 	make_sub_empty(tree,tree->root);
 	if(length<=0) return;
 	for(i=0;i<length;++i){
@@ -84,7 +84,7 @@ tree_node_pt avl_delete(bs_tree_pt tree,const tree_node_pt node){
 	}else if(del->right==tree->nil){
 		del=del->left;
 	}else{
-		del=bs_minimum_sub(tree,del->right);
+		del=minimum_sub(tree,del->right);
 		del->bf=node->bf;
 		del=del->right;
 	}

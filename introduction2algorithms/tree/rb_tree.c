@@ -33,8 +33,8 @@ bs_tree_pt rb_new_tree(compare_func_t compare){
 	return tree;
 }
 
-void rb_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,long int length){
-	long int i;
+void rb_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,long length){
+	long i;
 	make_sub_empty(tree,tree->root);
 	if(length<=0) return;
 	for(i=0;i<length;++i){
@@ -101,7 +101,7 @@ tree_node_pt rb_delete(bs_tree_pt tree,const tree_node_pt node){
 		del=node->left;
 		transplant_node(tree,node->left,node);
 	}else{
-		del=bs_minimum_sub(tree,del->right);
+		del=minimum_sub(tree,del->right);
 		d_color=del->color;
 		del->color=node->color;
 		//对右子树最小节点不是右节点的情况进行转化

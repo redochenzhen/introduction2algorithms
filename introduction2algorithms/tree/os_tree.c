@@ -29,8 +29,8 @@ bs_tree_pt os_new_tree(compare_func_t compare){
 	return tree;
 }
 
-void os_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,long int length){
-	long int i;
+void os_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,long length){
+	long i;
 	make_sub_empty(tree,tree->root);
 	if(length<=0) return;
 	for(i=0;i<length;++i){
@@ -124,7 +124,7 @@ tree_node_pt os_delete(bs_tree_pt tree,const tree_node_pt node){
 		del=node->left;
 		transplant_node(tree,node->left,node);
 	}else{
-		del=bs_minimum_sub(tree,del->right);
+		del=minimum_sub(tree,del->right);
 		d_color=del->color;
 		del->color=node->color;
 		//对右子树最小节点不是右节点的情况进行转化
@@ -235,8 +235,8 @@ void right_rotate_with_size(bs_tree_pt tree,tree_node_pt node){
 }
 
 
-tree_node_pt os_select(bs_tree_pt tree,long int index){
-	long int i;
+tree_node_pt os_select(bs_tree_pt tree,long index){
+	long i;
 	tree_node_pt node;
 	if(index>=tree->root->size){
 		return NIL;
@@ -257,14 +257,14 @@ tree_node_pt os_select(bs_tree_pt tree,long int index){
 	return node;
 }
 
-long int os_rank(bs_tree_pt tree,elem_t satellite){
+long os_rank(bs_tree_pt tree,elem_t satellite){
 	/*
 	 * 比较版本1和版本2很有意思，两者都体现了一种维持
 	 * “不变式”的编程思想，但分别选择了不同的“不变式”
 	 */
 	//版本1
 	int flag;
-	long int i=0;
+	long i=0;
 	tree_node_pt node=tree->root;
 	while(node!=tree->nil){
 		flag=tree->compare(satellite,node->satellite);
@@ -284,7 +284,7 @@ long int os_rank(bs_tree_pt tree,elem_t satellite){
 
 //	//版本2
 //	int flag;
-//	long int i;
+//	long i;
 //	tree_node_pt node=tree->root;
 //	if(node==tree->nil){
 //		return -1;
@@ -314,8 +314,8 @@ long int os_rank(bs_tree_pt tree,elem_t satellite){
 //	return os_rank_node(tree,node);
 }
 
-long int os_rank_node(bs_tree_pt tree,tree_node_pt node){
-	long int i;
+long os_rank_node(bs_tree_pt tree,tree_node_pt node){
+	long i;
 	if(node==NIL||node==tree->nil){
 		return -1;
 	}

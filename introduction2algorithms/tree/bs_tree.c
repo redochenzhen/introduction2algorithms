@@ -20,24 +20,24 @@ bs_tree_pt bs_new_tree(compare_func_t compare){
 }
 
 
-void bs_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,long int length){
-	long int i;
+void bs_reset_tree(bs_tree_pt tree,elem_arr_t satellite_arr,long length){
+	long i;
 	make_sub_empty(tree,tree->root);
 	for(i=0;i<length;++i){
 		bs_insert(tree,new_node(satellite_arr[i]));
 	}
 }
 
-static void elem_swap(elem_t* x,elem_t* y){
+static void inline elem_swap(elem_t* x,elem_t* y){
 	elem_t tmp=*x;
 	*x=*y;
 	*y=tmp;
 }
 
 //会导致数据源随机排列
-void bs_reset_tree_randomize(bs_tree_pt tree,elem_arr_t satellite_arr,long int length){
-	long int i;
-	long int r;
+void bs_reset_tree_randomize(bs_tree_pt tree,elem_arr_t satellite_arr,long length){
+	long i;
+	long r;
 	make_sub_empty(tree,tree->root);
 	for(i=length-1;i>=0;--i){
 		r=random()%(i+1);
@@ -46,7 +46,7 @@ void bs_reset_tree_randomize(bs_tree_pt tree,elem_arr_t satellite_arr,long int l
 	}
 }
 
-tree_node_pt bs_minimum_sub(bs_tree_cpt tree,tree_node_pt sub_root){
+tree_node_pt minimum_sub(bs_tree_cpt tree,tree_node_pt sub_root){
 	tree_node_pt min=sub_root;
 	while(min->left!=tree->nil){
 		min=min->left;
@@ -54,7 +54,7 @@ tree_node_pt bs_minimum_sub(bs_tree_cpt tree,tree_node_pt sub_root){
 	return min;
 }
 
-tree_node_pt bs_maximum_sub(bs_tree_cpt tree,tree_node_pt sub_root){
+tree_node_pt maximum_sub(bs_tree_cpt tree,tree_node_pt sub_root){
 	tree_node_pt max=sub_root;
 	while(max->right!=tree->nil){
 		max=max->right;
@@ -62,9 +62,9 @@ tree_node_pt bs_maximum_sub(bs_tree_cpt tree,tree_node_pt sub_root){
 	return max;
 }
 
-tree_node_pt bs_successor(bs_tree_cpt tree,tree_node_pt node){
+tree_node_pt successor(bs_tree_cpt tree,tree_node_pt node){
 	if(node->right!=tree->nil){
-		return bs_minimum_sub(tree,node->right);
+		return minimum_sub(tree,node->right);
 	}
 	while(node!=tree->root&&node==node->parent->right){
 		node=node->parent;
@@ -72,9 +72,9 @@ tree_node_pt bs_successor(bs_tree_cpt tree,tree_node_pt node){
 	return node->parent;
 }
 
-tree_node_pt bs_predecessor(bs_tree_cpt tree,tree_node_pt node){
+tree_node_pt predecessor(bs_tree_cpt tree,tree_node_pt node){
 	if(node->left!=tree->nil){
-		return bs_maximum_sub(tree,node->left);
+		return maximum_sub(tree,node->left);
 	}
 	while(node!=tree->root&&node==node->parent->left){
 		node=node->parent;
@@ -115,7 +115,7 @@ tree_node_pt bs_delete(bs_tree_pt tree,const tree_node_pt node){
 	}else if(node->right==tree->nil){
 		transplant_node(tree,node->left,node);
 	}else{
-		tree_node_pt min=bs_minimum_sub(tree,node->right);
+		tree_node_pt min=minimum_sub(tree,node->right);
 		//对右子树最小节点不是右节点的情况进行转化
 		if(node!=min->parent){
 			transplant_node(tree,min->right,min);
@@ -132,11 +132,11 @@ tree_node_pt bs_delete(bs_tree_pt tree,const tree_node_pt node){
 	return node;
 }
 
-tree_node_pt bs_search(bs_tree_cpt tree,elem_t satellite){
-	return bs_search_sub(tree,tree->root,satellite);
+tree_node_pt inline tree_search(bs_tree_cpt tree,elem_t satellite){
+	return tree_search_sub(tree,tree->root,satellite);
 }
 
-tree_node_pt bs_search_sub(bs_tree_cpt tree,tree_node_pt sub_root,elem_t satellite){
+tree_node_pt tree_search_sub(bs_tree_cpt tree,tree_node_pt sub_root,elem_t satellite){
 	int flag;
 	while(sub_root!=tree->nil){
 		flag=tree->compare(satellite,sub_root->satellite);
@@ -153,9 +153,9 @@ tree_node_pt bs_search_sub(bs_tree_cpt tree,tree_node_pt sub_root,elem_t satelli
 	return sub_root;
 }
 
-//默认将satellite当作long int来比较
-int default_compare(elem_t x,elem_t y){
-	long int n=(long int)x-(long int)y;
+//默认将satellite当作long来比较
+int inline default_compare(elem_t x,elem_t y){
+	long n=(long)x-(long)y;
 	if(n>0L) return 1;
 	if(n<0L) return -1;
 	return 0;
