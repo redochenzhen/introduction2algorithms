@@ -11,7 +11,7 @@
 #include "../contract.h"
 
 #define MOD_POW2(x,y) ((x)&((y)-1))	//要求y是2的幂
-#define DEFAULT_TBL_SIZE 0x1000		//要求是2的幂
+#define DEFAULT_TBL_SIZE 4			//0x1000		//要求是2的幂
 #define DEFAULT_LOAD_FACTOR 1
 #define LOAD_FACTOR(h) ((float)(h->count)/(h->size))
 
@@ -92,6 +92,7 @@ ulong inline integer_hash(_key_t key);
 bool inline integer_equal(_key_t x,_key_t y);
 ulong inline string_hash(_key_t key);
 bool inline string_equal(_key_t x,_key_t y);
+void free_dhash_tbl(dhash_tbl_pt table);
 #endif /* HASH_H_ */
 
 

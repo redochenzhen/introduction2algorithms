@@ -94,7 +94,7 @@ elem_t hash_delete(hash_tbl_pt table,_key_t key){
 	if(info.slot!=NIL){
 		elem=info.slot->satellite;
 		if(info.prior==NIL){
-			table->slot_arr[info.loc]=NIL;
+			table->slot_arr[info.loc]=info.slot->next;
 		}else{
 			info.prior->next=info.slot->next;
 		}
