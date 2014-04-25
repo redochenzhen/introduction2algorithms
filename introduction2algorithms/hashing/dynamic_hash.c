@@ -29,13 +29,23 @@ static ulong locate_slot(dhash_tbl_cpt table,ulong hashcode){
 }
 
 static slot_segment_pt inline new_slot_segment(){
-	slot_segment_pt segment=(slot_segment_pt)malloc(sizeof(slot_segment_t));
-	memset(segment,0,sizeof(slot_segment_t));
-	return segment;
+	slot_segment_pt seg=(slot_segment_pt)malloc(sizeof(slot_segment_t));
+	memset(seg,0,sizeof(slot_segment_t));
+	return seg;
 }
 
-static void inline free_slot_segment(){
-
+static void free_slot_segment(slot_segment_pt seg){
+	ulong loc=0;
+	slot_pt slot,next;
+	for(;loc<DEFAULT_SEG_SIZE;++loc){
+		slot=seg->slot_arr[loc];
+		while(slot!=NIL){
+			next=slot->next;
+			free(slot);
+			slot=next;
+		}
+	}
+	free(seg);
 }
 
 static void inline resize_directory(dhash_tbl_pt table,ulong newsize){
@@ -105,7 +115,7 @@ elem_t dhash_delete(dhash_tbl_pt table,_key_t key){
 		elem=info.slot->satellite;
 		if(info.prior==NIL){
 			slot_pt *slot_arr=table->seg_arr[info.seg_idx]->slot_arr;
-			slot_arr[info.loc]=NIL;
+			slot_arr[info.loc]=info.slot->next;
 		}else{
 			info.prior->next=info.slot->next;
 		}
@@ -113,6 +123,17 @@ elem_t dhash_delete(dhash_tbl_pt table,_key_t key){
 		table->count--;
 	}
 	return elem;
+}
+
+void free_dhash_tbl(dhash_tbl_pt table){
+	ulong idx=0;
+	slot_segment_pt seg=table->seg_arr[0];
+	while(seg!=NIL){
+		free_slot_segment(seg);
+		seg=table->seg_arr[++idx];
+	}
+	free(table->seg_arr);
+	free(table);
 }
 
 static void search_slot(dhash_tbl_pt table,_key_t key,search_info_t *info){

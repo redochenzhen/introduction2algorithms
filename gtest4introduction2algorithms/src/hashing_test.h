@@ -20,6 +20,7 @@ ulong *I=NIL;
 hash_tbl_pt H1=NIL;
 hash_tbl_pt H2=NIL;
 dhash_tbl_pt DH1=NIL;
+dhash_tbl_pt DH2=NIL;
 
 void init_hashing_test(){
 	ulong i;
@@ -27,6 +28,7 @@ void init_hashing_test(){
 	for(i=0;i<l;++i){
 		I[i]=rand();
 	}
+	//-----------------------------------------------------
 	H1=new_hash_tbl(HASH_INTEGER,NIL,NIL);
 	for(i=0;i<l;++i){
 		hash_insert(H1,(_key_t)(I[i]),(elem_t)(I[i]*I[i]));
@@ -35,13 +37,20 @@ void init_hashing_test(){
 	DH1=new_dhash_tbl(HASH_INTEGER,0,0);
 	for(i=0;i<l;++i){
 		dhash_insert(DH1,(_key_t)(I[i]),(elem_t)(I[i]*I[i]));
-		std::cout<<D_LOAD_FACTOR(DH1)<<",";
-		if((i+1)%64==0){
-			std::cout<<std::endl;
-		}
+//		std::cout<<D_LOAD_FACTOR(DH1)<<",";
+//		if((i+1)%64==0){
+//			std::cout<<std::endl;
+//		}
+	}
+	for(i=0;i<2000;++i){
+		dhash_delete(DH1,(_key_t)I[i]);
+//		std::cout<<D_LOAD_FACTOR(DH1)<<",";
+//		if((i+1)%64==0){
+//			std::cout<<std::endl;
+//		}
 	}
 	//-----------------------------------------------------
-	H2=new_hash_tbl(HASH_STRING,NIL,NIL);
+	H2=new_hash_tbl(HASH_STRING,0,0);
 	hash_insert(H2,(_key_t)("chen"),(elem_t)(27));
 	hash_insert(H2,(_key_t)("wang"),(elem_t)(23));
 	hash_insert(H2,(_key_t)("lucy"),(elem_t)(22));
@@ -53,11 +62,28 @@ void init_hashing_test(){
 	hash_insert(H2,(_key_t)("coco"),(elem_t)(14));
 	hash_insert(H2,(_key_t)("nana"),(elem_t)(23));
 	hash_insert(H2,(_key_t)("jorn"),(elem_t)(23));
+	hash_delete(H2,H2->slot_arr[2]->key);
+	//-----------------------------------------------------
+	DH2=new_dhash_tbl(HASH_STRING,0,0);
+	dhash_insert(DH2,(_key_t)("chen"),(elem_t)(27));
+	dhash_insert(DH2,(_key_t)("wang"),(elem_t)(23));
+	dhash_insert(DH2,(_key_t)("lucy"),(elem_t)(22));
+	dhash_insert(DH2,(_key_t)("tom"),(elem_t)(16));
+	dhash_insert(DH2,(_key_t)("jack"),(elem_t)(11));
+	dhash_insert(DH2,(_key_t)("tomy"),(elem_t)(11));
+	dhash_insert(DH2,(_key_t)("lily"),(elem_t)(33));
+	dhash_insert(DH2,(_key_t)("tim"),(elem_t)(42));
+	dhash_insert(DH2,(_key_t)("coco"),(elem_t)(14));
+	dhash_insert(DH2,(_key_t)("nana"),(elem_t)(23));
+	dhash_insert(DH2,(_key_t)("jorn"),(elem_t)(23));
 }
 
 void cleanup_hash_test(){
 	free_hash_tbl(H1);
-	if(I) delete[] I;
+	free_hash_tbl(H2);
+	free_dhash_tbl(DH1);
+	free_dhash_tbl(DH2);
+	delete[] I;
 }
 
 #ifdef HASH_TEST
