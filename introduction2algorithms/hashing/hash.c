@@ -10,15 +10,10 @@
 #include <string.h>
 #include <stdlib.h>
 
-static void search_slot(hash_tbl_cpt table,_key_t key,search_info_t *info);
+static bool search_slot(hash_tbl_cpt table,_key_t key,ulong* hashcode,slot_pt** p_slot);
 
-slot_pt new_slot(_key_t key,elem_t satellite,hash_func_t hash_func){
-	slot_pt slot=(slot_pt)malloc(sizeof(slot_t));
-	slot->hashcode=hash_func(key);
-	slot->key=key;
-	slot->satellite=satellite;
-	slot->next=NIL;
-	return slot;
+slot_pt inline new_slot(_key_t key,elem_t satellite,hash_func_t hash_func){
+	return new_slot_no_calculate(key,hash_func(key),satellite);
 }
 
 slot_pt new_slot_no_calculate(_key_t key,ulong hashcode,elem_t satellite){
@@ -59,48 +54,51 @@ hash_tbl_pt new_hash_tbl(hash_type_t type,hash_func_t hash_func,equal_func_t equ
 }
 
 bool hash_insert(hash_tbl_pt table,_key_t key,elem_t satellite){
-	search_info_t info;
-	search_slot(table,key,&info);
-	if(info.slot!=NIL){
+	ulong hashcode;
+	slot_pt* p_slot;
+	slot_pt newslot;
+	if(search_slot(table,key,&hashcode,&p_slot)){
 		return false;
 	}
-	slot_pt newslot=new_slot_no_calculate(key,info.hashcode,satellite);
-	slot_pt *slot_arr=table->slot_arr;
-	newslot->next=slot_arr[info.loc];
-	slot_arr[info.loc]=newslot;
+	newslot=new_slot_no_calculate(key,hashcode,satellite);
+	newslot->next=*p_slot;
+	*p_slot=newslot;
 	table->count++;
 #ifdef Debug
-	table->SLOT_DEEP_ARR[info.loc]++;
+	table->SLOT_DEEP_ARR[MOD_POW2(hashcode,table->size)]++;
 #endif
 	return true;
 }
 
 bool inline hash_exist(hash_tbl_cpt table,_key_t key){
-	search_info_t info;
-	search_slot(table,key,&info);
-	return info.slot!=NIL;
+	ulong tmp1;
+	slot_pt *tmp2;
+	return search_slot(table,key,&tmp1,&tmp2);
 }
 
-elem_t inline hash_search(hash_tbl_cpt table,_key_t key){
-	search_info_t info;
-	search_slot(table,key,&info);
-	return info.slot==NIL?NIL:info.slot->satellite;
+bool hash_search(hash_tbl_cpt table,_key_t key,elem_t* out_elem){
+	ulong tmp;
+	slot_pt *p_slot;
+	if(!search_slot(table,key,&tmp,&p_slot)){
+		return false;
+	}
+	*out_elem=(*p_slot)->satellite;
+	return true;
 }
 
 elem_t hash_delete(hash_tbl_pt table,_key_t key){
+	ulong tmp;
 	elem_t elem=NIL;
-	search_info_t info;
-	search_slot(table,key,&info);
-	if(info.slot!=NIL){
-		elem=info.slot->satellite;
-		if(info.prior==NIL){
-			table->slot_arr[info.loc]=info.slot->next;
-		}else{
-			info.prior->next=info.slot->next;
-		}
-		free(info.slot);
-		table->count--;
+	slot_pt* p_slot;
+	slot_pt del;
+	if(!search_slot(table,key,&tmp,&p_slot)){
+		return NIL;
 	}
+	del=*p_slot;
+	elem=del->satellite;
+	*p_slot=del->next;	//or:*p_slot=(*p_slot)->next;
+	free(del);
+	table->count--;
 	return elem;
 }
 
@@ -122,25 +120,21 @@ void free_hash_tbl(hash_tbl_pt table){
 	free(table);
 }
 
-void search_slot(hash_tbl_cpt table,_key_t key,search_info_t *info){
+static bool search_slot(hash_tbl_cpt table,_key_t key,ulong* p_hashcode,slot_pt** pp_slot){
 	ulong hashcode=table->hash(key);
 	ulong loc=MOD_POW2(hashcode,table->size);
-	slot_pt* slot_arr=table->slot_arr;
-	slot_pt slot;
-	slot_pt prior=NIL;
-	slot=slot_arr[loc];
-	while(slot!=NIL){
-		if(hashcode==slot->hashcode&&table->is_equal(key,slot->key)){
+	slot_pt* p_slot=&table->slot_arr[loc];
+	while(*p_slot!=NIL){
+		//->优先级比*、&高
+		if(hashcode==(*p_slot)->hashcode&&table->is_equal(key,(*p_slot)->key)){
 			break;
 		}else{
-			prior=slot;
-			slot=slot->next;
+			p_slot=&(*p_slot)->next;
 		}
 	}
-	info->hashcode=hashcode;
-	info->loc=loc;
-	info->slot=slot;
-	info->prior=prior;
+	*p_hashcode=hashcode;
+	*pp_slot=p_slot;
+	return *p_slot!=NIL;
 }
 
 ulong inline integer_hash(_key_t key){

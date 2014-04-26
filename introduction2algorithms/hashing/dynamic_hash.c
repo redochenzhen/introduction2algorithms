@@ -12,7 +12,7 @@
 
 extern slot_pt new_slot_no_calculate(_key_t key,ulong hashcode,elem_t satellite);
 static void expand_table(dhash_tbl_pt table);
-static void search_slot(dhash_tbl_pt table,_key_t key,search_info_t *info);
+static bool search_slot(dhash_tbl_pt table,_key_t key,ulong* p_hashcode,slot_pt** pp_slot);
 
 static uint _log2(uint n){
 	uint i=0;
@@ -82,46 +82,48 @@ dhash_tbl_pt new_dhash_tbl(hash_type_t type,hash_func_t hash_func,equal_func_t e
 }
 
 bool dhash_insert(dhash_tbl_pt table,_key_t key,elem_t satellite){
-	search_info_t info;
-	search_slot(table,key,&info);
-	if(info.slot!=NIL){
+	ulong hashcode;
+	slot_pt* p_slot;
+	slot_pt newslot;
+	if(search_slot(table,key,&hashcode,&p_slot)){
 		return false;
 	}
-	slot_pt newslot=new_slot_no_calculate(key,info.hashcode,satellite);
-	slot_pt *slot_arr=table->seg_arr[info.seg_idx]->slot_arr;
-	newslot->next=slot_arr[info.loc];
-	slot_arr[info.loc]=newslot;
+	newslot=new_slot_no_calculate(key,hashcode,satellite);
+	newslot->next=*p_slot;
+	*p_slot=newslot;
 	table->count++;
 	return true;
 }
 
 bool inline dhash_exist(dhash_tbl_pt table,_key_t key){
-	search_info_t info;
-	search_slot(table,key,&info);
-	return info.slot!=NIL;
+	ulong tmp1;
+	slot_pt *tmp2;
+	return search_slot(table,key,&tmp1,&tmp2);
 }
 
-elem_t inline dhash_search(dhash_tbl_pt table,_key_t key){
-	search_info_t info;
-	search_slot(table,key,&info);
-	return info.slot==NIL?NIL:info.slot->satellite;
+bool inline dhash_search(dhash_tbl_pt table,_key_t key,elem_t* out_elem){
+	ulong tmp;
+	slot_pt *p_slot;
+	if(!search_slot(table,key,&tmp,&p_slot)){
+		return false;
+	}
+	*out_elem=(*p_slot)->satellite;
+	return true;
 }
 
 elem_t dhash_delete(dhash_tbl_pt table,_key_t key){
+	ulong tmp;
 	elem_t elem=NIL;
-	search_info_t info;
-	search_slot(table,key,&info);
-	if(info.slot!=NIL){
-		elem=info.slot->satellite;
-		if(info.prior==NIL){
-			slot_pt *slot_arr=table->seg_arr[info.seg_idx]->slot_arr;
-			slot_arr[info.loc]=info.slot->next;
-		}else{
-			info.prior->next=info.slot->next;
-		}
-		free(info.slot);
-		table->count--;
+	slot_pt* p_slot;
+	slot_pt del;
+	if(!search_slot(table,key,&tmp,&p_slot)){
+		return NIL;
 	}
+	del=*p_slot;
+	elem=del->satellite;
+	*p_slot=del->next;	//or:*p_slot=*p_slot->next;
+	free(del);
+	table->count--;
 	return elem;
 }
 
@@ -136,7 +138,7 @@ void free_dhash_tbl(dhash_tbl_pt table){
 	free(table);
 }
 
-static void search_slot(dhash_tbl_pt table,_key_t key,search_info_t *info){
+static bool search_slot(dhash_tbl_pt table,_key_t key,ulong* p_hashcode,slot_pt** pp_slot){
 	//--------------------------------------------------
 	if(D_LOAD_FACTOR(table)>DEFAULT_LOAD_FACTOR){
 		expand_table(table);
@@ -146,22 +148,17 @@ static void search_slot(dhash_tbl_pt table,_key_t key,search_info_t *info){
 	ulong slot_num=locate_slot(table,hashcode);
 	ulong seg_idx=slot_num>>table->seg_shift;
 	ulong loc=MOD_POW2(slot_num,DEFAULT_SEG_SIZE);
-	slot_segment_pt seg=table->seg_arr[seg_idx];
-	slot_pt prior=NIL;
-	slot_pt slot=seg->slot_arr[loc];
-	while(slot!=NIL){
-		if(hashcode==slot->hashcode&&table->is_equal(key,slot->key)){
+	slot_pt* p_slot=&table->seg_arr[seg_idx]->slot_arr[loc];
+	while(*p_slot!=NIL){
+		if(hashcode==(*p_slot)->hashcode&&table->is_equal(key,(*p_slot)->key)){
 			break;
 		}else{
-			prior=slot;
-			slot=slot->next;
+			p_slot=&(*p_slot)->next;
 		}
 	}
-	info->hashcode=hashcode;
-	info->loc=loc;
-	info->seg_idx=seg_idx;
-	info->slot=slot;
-	info->prior=prior;
+	*p_hashcode=hashcode;
+	*pp_slot=p_slot;
+	return *p_slot!=NIL;
 }
 
 static void expand_table(dhash_tbl_pt table){
